@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 0 0% 99%;
+  --foreground: 210 15% 15%;
+  --muted: 210 16% 96%;
+  --card: 0 0% 100%;
+  --border: 210 16% 90%;
+
+  /* Brand color (blue-violet) */
+  --brand: 258 88% 60%;
+  --brand-foreground: 0 0% 100%;
+}
+
+html { scroll-behavior: smooth; }
+
+.container { max-width: 1100px; }
+
+/* Improve focus outline contrast */
+*:focus-visible { outline-offset: 2px; }
+
+/* Typography */
+body { line-height: 1.6; }
+
