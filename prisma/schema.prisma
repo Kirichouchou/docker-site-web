@@ -1,12 +1,11 @@
-// Prisma schema aligned with auth + products + purchases
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")   // URL POOLÉE (Neon pooler) pour Vercel
+  directUrl = env("DIRECT_URL")     // URL DIRECTE (non poolée) pour les migrations
+}
 
 generator client {
   provider = "prisma-client-js"
-}
-
-datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
 }
 
 model User {
