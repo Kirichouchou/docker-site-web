@@ -8,7 +8,6 @@ export async function GET() {
     orderBy: { createdAt: "asc" },
   });
   return NextResponse.json(
-    products.map((p) => ({ id: p.id, name: p.name, priceCents: p.amount }))
+    products.map((p: any) => ({ id: p.id, name: p.name, priceCents: p.amount }))
   );
 }
-

@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
   });
 
   return NextResponse.json(
-    rows.map((r) => ({
+    rows.map((r: any) => ({
       id: r.id,
       userEmail: r.user.email,
       productName: r.product.name,
@@ -25,4 +25,3 @@ export async function GET(req: NextRequest) {
     }))
   );
 }
-

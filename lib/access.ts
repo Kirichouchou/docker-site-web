@@ -60,7 +60,7 @@ export async function grantAccessForSession(params: {
   const email = params.email.toLowerCase();
   const user = await prisma.user.upsert({
     where: { email },
-    create: { email },
+    create: { email, passwordHash: null },
     update: {},
   });
 

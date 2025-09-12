@@ -1,5 +1,6 @@
 import "server-only";
-import bcrypt from "bcrypt";
+// Use bcryptjs (pure JS) for serverless compatibility on Vercel
+import bcrypt from "bcryptjs";
 
 const ROUNDS = 10;
 

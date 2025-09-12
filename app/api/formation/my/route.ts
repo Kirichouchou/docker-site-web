@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
     const token = req.cookies.get("access_token")?.value;
     if (!token) return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
 
-    const payload = verifyAccessToken<{ sub: string }>(token);
+    const payload = verifyAccessToken(token) as { sub: string; type: "access" };
     if (!payload?.sub) return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
     const userId = payload.sub;
 
@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
       orderBy: { name: "asc" },
     });
 
-    const trainings = products.map((p) => ({
+    const trainings = products.map((p: any) => ({
       product: p,
       modules: (catalogue[p.key] ?? []).slice().sort((a, b) => a.order - b.order),
     }));
@@ -37,4 +37,3 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "SERVER_ERROR" }, { status: 500 });
   }
 }
-

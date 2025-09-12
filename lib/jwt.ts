@@ -1,31 +1,55 @@
-import "server-only";
-import type { SignOptions, VerifyOptions } from "jsonwebtoken";
-import * as jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || "change_me";
-
-export type JwtPayload = { sub: string; email?: string; role?: "ADMIN" | "USER"; type?: "access" | "reset" } & Record<string, unknown>;
-
-export function signToken(payload: JwtPayload, options: SignOptions = { expiresIn: "15m" }) {
-  return jwt.sign(payload, JWT_SECRET, options);
-}
-
-export function signAccessToken(payload: Omit<JwtPayload, "type">, expiresIn: string | number = "30m") {
-  return jwt.sign({ ...payload, type: "access" }, JWT_SECRET, { expiresIn });
-}
-
-export function signResetToken(payload: Omit<JwtPayload, "type">, expiresIn: string | number = "30m") {
-  return jwt.sign({ ...payload, type: "reset" }, JWT_SECRET, { expiresIn });
-}
-
-export function verifyToken<T extends object = JwtPayload>(token: string, options?: VerifyOptions): T | null {
-  try {
-    return jwt.verify(token, JWT_SECRET, options) as T;
-  } catch {
-    return null;
+function getJwtSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error("Missing JWT_SECRET environment variable.");
   }
+  return secret;
 }
 
-export function verifyAccessToken<T extends object = JwtPayload>(token: string, options?: VerifyOptions): T | null {
-  return verifyToken<T>(token, options);
+export type JwtRole = "ADMIN" | "USER";
+
+export type JwtPayload = {
+  sub: string; // user id
+  email?: string;
+  role?: JwtRole;
+  type: "access" | "reset";
+};
+
+// jsonwebtoken v9 options: extract the exact type for `expiresIn`
+type Expires = NonNullable<Parameters<typeof jwt.sign>[2]> extends infer O
+  ? O extends { expiresIn?: infer E }
+    ? E
+    : never
+  : never;
+
+export function signAccessToken(
+  payload: Omit<JwtPayload, "type">,
+  expiresIn: Expires = "30m" as Expires
+) {
+  return jwt.sign({ ...payload, type: "access" }, getJwtSecret(), { expiresIn });
+}
+
+export function signResetToken(
+  payload: Omit<JwtPayload, "type">,
+  expiresIn: Expires = "30m" as Expires
+) {
+  return jwt.sign({ ...payload, type: "reset" }, getJwtSecret(), { expiresIn });
+}
+
+export function verifyToken<T extends JwtPayload>(token: string): T {
+  return jwt.verify(token, getJwtSecret()) as T;
+}
+
+export function verifyAccessToken<T extends JwtPayload>(token: string): T {
+  const payload = verifyToken<T>(token);
+  if (payload.type !== "access") throw new Error("Invalid token type (expected access).");
+  return payload;
+}
+
+export function verifyResetToken<T extends JwtPayload>(token: string): T {
+  const payload = verifyToken<T>(token);
+  if (payload.type !== "reset") throw new Error("Invalid token type (expected reset).");
+  return payload;
 }
