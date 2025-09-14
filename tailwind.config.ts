@@ -8,7 +8,17 @@ const config: Config = {
     "./app/**/*.{ts,tsx}",
   ],
   theme: {
+    container: {
+      center: true,
+      padding: "1rem",
+      screens: {
+        "2xl": "1200px",
+      },
+    },
     extend: {
+      fontFamily: {
+        sans: ["Pretendard", "ui-sans-serif", "system-ui", "-apple-system", "Segoe UI", "Roboto", "Ubuntu", "Cantarell", "Noto Sans", "Helvetica Neue", "Arial", "sans-serif"],
+      },
       colors: {
         brand: {
           DEFAULT: "hsl(var(--brand))",
@@ -36,4 +46,3 @@ const config: Config = {
 };
 
 export default config;
-

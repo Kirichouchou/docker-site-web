@@ -1,81 +1,76 @@
-# Mini Boutique — Next.js 14 + Stripe + Auth JWT + Prisma
+# Site Next.js 14 orienté conversion (UX/CRO)
 
-Mini-boutique avec 2 produits, paiement Stripe Checkout, gating de la page `/formation` après achat, design arrondi, responsive, et CTA visible. Authentification par e-mail + mot de passe (JWT) et endpoints Admin pour gérer les accès.
+Architecture App Router (TypeScript + Tailwind), mobile-first, avec design system conversion-first, analytics d’événements (CTA, scroll, offres) et heatmap intégrée.
+
+## Arborescence
+
+- `app/` pages App Router: `page.tsx` (Home), `offres/`, `partenariat/`, `contact/`, `blog/` (optionnel), `api/analytics` (POST)
+- `components/` composants UI: `Navbar`, `Hero`, `OfferCard`, `PricingToggle`, `FAQ`, `CTASection`, `AnnouncementBar`, `AnalyticsProvider`, `ScrollTracker`
+- `lib/` utilitaires (ex: `analytics.ts`)
+- `public/` assets
+
+## Design system (Tailwind)
+
+- Police: Pretendard (via `@fontsource/pretendard` + `font-display: swap`)
+- Couleurs: `--brand` bleu accessible (`text on brand` ≥ 4.5:1), foreground/background/muted/border
+- Radius: `rounded-lg` (8px), ombre douce `shadow-soft`
+- Grille: container centré max 1200px
+- Spacing: sections avec `py-10` (40px)
+- Focus: `:focus-visible` visible et contrasté
+
+Voir `tailwind.config.ts` et `styles/globals.css`.
+
+## IA des pages
+
+Home: Hero → Preuve → Offres (3 plans max, recommandation) → FAQ → CTA final. Offres: liste détaillée + toggle mensuel/annuel. Partenariat: approche orientée outcomes. Contact: formulaire simple (mailto).
+
+## Analytics & Heatmap
+
+- Heatmap: Microsoft Clarity via `NEXT_PUBLIC_CLARITY_ID` (script chargé dans `AnalyticsProvider`)
+- Événements: clics CTA et sélection d’offre (`data-cta` / `data-event`), scroll 25/50/75/100 via `ScrollTracker`
+- Endpoint: `POST /api/analytics` (log server-side)
+
+## Accessibilité & perf
+
+- Landmarks sémantiques, focus visible, boutons ≥ 44px de haut, contrastes AA/AAA
+- `next/image` pour visuels, font swap, sections espacées uniformément
 
 ## Installation
 
-1) Cloner le repo
-2) Installer les dépendances: `pnpm install`
-3) Configurer `.env` (voir section Vars)
-4) Générer Prisma Client, migrer et seed:
+1. `pnpm install`
+2. (Optionnel) Configurer la heatmap dans `.env.local`:
+   - `NEXT_PUBLIC_CLARITY_ID="XXXXXXXX"`
+3. `pnpm dev` puis http://localhost:3000
 
-```bash
-pnpm prisma:generate
-pnpm db:migrate
-pnpm db:seed
+Build & run:
+
+```
+pnpm build
+pnpm start
 ```
 
-5) Démarrer en dev: `pnpm dev` (http://localhost:3000)
+## A/B testing (bref)
 
-## Variables d'environnement
+- Variez `H1`: valeur vs prix dans `Hero`
+- Variez CTA: “Démarrer ensemble” vs “Parler à un expert” via `data-cta` et analyse des conversions
 
-- `STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`, `STRIPE_WEBHOOK_SECRET`
-- `NEXTAUTH_SECRET`, `NEXTAUTH_URL` (si NextAuth utilisé)
-- `JWT_SECRET` (auth personnalisée JWT)
-- `PRICE_ID_PRODUCT_A`, `PRICE_ID_PRODUCT_B`, `PRICE_AMOUNT_PRODUCT_A`, `PRICE_AMOUNT_PRODUCT_B`
-- `DATABASE_PROVIDER` (`sqlite` par défaut) et `DATABASE_URL`
+## Checklist QA
 
-## Auth & Accès
+- Nav: sticky, contraste, indicateur de page active
+- CTA visible immédiatement dans le Hero (au-dessus de la ligne de flottaison)
+- Prix non dominant: bénéfices avant tarifs ; carte “Recommandé” présente
+- Spacing inter-sections = 40px ; transitions douces ; pas de coupures
+- Boutons centrés, min-height ≥ 44px ; focus visibles
+- Mobile ≤ 360px: nav accessible, cartes stackées, CTA full-width
+- LCP < 2.5s sur connexion 4G simulée ; Lighthouse ≥ 90 (Perf/SEO/Best/Access)
+- Événements analytics OK: CTA, toggle pricing, scroll
+- Heatmap chargée (si ID présent)
 
-- Login `/login` (e-mail + mot de passe) — cookie HTTP-only `token` (JWT, 30 min)
-- Endpoints:
-  - `POST /api/auth/register`
-  - `POST /api/auth/login`
-  - `POST /api/auth/forgot`
-  - `POST /api/auth/reset`
-- Admin (JWT role=ADMIN):
-  - `GET /api/admin/purchases`
-  - `POST /api/admin/purchases/:id/toggle-access`
-  - `PATCH /api/admin/users/:id/email`
-  - `PATCH /api/admin/users/:id/password`
+## Personnalisation
 
-La page `/formation` vérifie que l’utilisateur possède un `Purchase` avec `accessActive = true`.
+Remplacez les placeholders: `[NOM_MARQUE]`, `[BÉNÉFICES_CLÉS]`. Couleurs: ajustez `--brand` dans `styles/globals.css`.
 
-## Stripe
+## Notes
 
-1) Créez 2 Prices dans Stripe et mettez leurs IDs dans `.env`
-2) Webhook local: `stripe listen --forward-to localhost:3000/api/stripe/webhook`
-3) Paiement test: page d’accueil → acheter → carte 4242… → redirection
-
-## DB & Prisma
-
-- Modèles:
-  - `User { id, email, passwordHash, role, createdAt, updatedAt }`
-  - `Product { id, key, name, priceId, amount(priceCents), isActive, createdAt, updatedAt }`
-  - `Purchase { id, userId, productId, paidAt, accessActive, createdAt, updatedAt }`
-  - (Legacy) `Order`, `Access` conservés pour compatibilité
-- Contraintes/index: uniques sur `User.email`, `Product.key`, `Purchase (userId,productId)`
-- Provider piloté par `.env` (sqlite/postgresql)
-
-## Seed
-
-`pnpm db:seed` crée:
-
-- 2 produits actifs
-- 1 admin (admin@example.com / Admin123!)
-- 2 users (alice/bob@example.com / User1234!)
-- 3 achats (dont un accès désactivé)
-
-## Scripts utiles
-
-- `pnpm dev`, `pnpm build`, `pnpm start`
-- `pnpm prisma:generate`, `pnpm db:push`, `pnpm db:migrate`, `pnpm db:seed`
-
-## Changelog (DB & API)
-
-- Ajout `User.passwordHash`, `User.role`
-- Ajout `Purchase` + contrainte unique `(userId, productId)`
-- Auth endpoints (bcrypt + JWT) et middleware d’accès côté API
-- Page `/login` nettoyée: plus de produits, ajout mot de passe + lien « Mot de passe oublié »
-- Webhook Stripe enrichi: création de `Purchase` + maintien de `Access` (legacy)
+Le projet contient des modules optionnels (auth/stripe/prisma) non requis pour le site de conversion. Ils n’interfèrent pas avec les pages livrées.
 

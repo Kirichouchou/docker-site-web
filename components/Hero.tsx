@@ -1,30 +1,48 @@
-import { ArrowRight } from "lucide-react";
+"use client";
+
+import Link from "next/link";
 
 export default function Hero() {
   return (
-    <div className="container mx-auto px-4 py-12 md:py-20">
-      <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-        <div className="rounded-2xl overflow-hidden shadow-md border border-border">
-          <div className="relative w-full" style={{ paddingTop: "56.25%" }}>
-            <iframe
-              className="absolute inset-0 h-full w-full"
-              src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-              title="Présentation formation"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
+    <section className="section">
+      <div className="container mx-auto px-4">
+        <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+          <div>
+            <span className="inline-flex items-center text-sm font-semibold text-[hsl(var(--brand))] mb-3" aria-live="polite">
+              Nouveau · Places limitées ce mois-ci
+            </span>
+            <h1 className="text-4xl md:text-5xl font-extrabold leading-tight tracking-tight">
+              [NOM_MARQUE] — obtenez des résultats concrets, pas juste un prix bas
+            </h1>
+            <p className="mt-4 text-lg text-black/70">
+              [BÉNÉFICES_CLÉS] : nous alignons votre réussite sur la nôtre.
+              Commencez avec un plan guidé, un accompagnement humain et des livrables mesurables.
+            </p>
+            <div className="mt-6 flex flex-col sm:flex-row gap-3">
+              <Link
+                href="/offres"
+                className="inline-flex justify-center items-center rounded-lg px-6 py-3 min-h-12 bg-[hsl(var(--brand))] text-[hsl(var(--brand-foreground))] font-semibold shadow-soft hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[hsl(var(--brand))]"
+                data-cta="hero_primary"
+              >
+                Démarrer ensemble
+              </Link>
+              <Link
+                href="/partenariat"
+                className="inline-flex justify-center items-center rounded-lg px-6 py-3 min-h-12 bg-white text-foreground border border-border font-semibold hover:bg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-[hsl(var(--brand))]"
+                data-cta="hero_secondary"
+              >
+                Parler à un expert
+              </Link>
+            </div>
+            <p className="mt-3 text-sm text-black/60">Garantie satisfaction · Annulable à tout moment · Support prioritaire</p>
+          </div>
+
+          <div className="rounded-lg overflow-hidden border border-border shadow-soft">
+            <div className="aspect-video w-full bg-muted" aria-label="Aperçu vidéo / visuel" />
           </div>
         </div>
-        <div>
-          <h1 className="text-3xl md:text-5xl font-semibold leading-tight mb-4">La formation qui accélère votre progression</h1>
-          <p className="text-lg text-muted-foreground mb-6">
-            Un parcours clair, des résultats concrets. Accédez aux modules et au support dès aujourd’hui.
-          </p>
-          <a href="#produits" className="inline-flex items-center rounded-2xl px-6 py-3 bg-brand text-white hover:opacity-90 transition-all duration-200 shadow-soft text-base">
-            Commencer maintenant <ArrowRight className="ml-2 h-5 w-5" />
-          </a>
-        </div>
       </div>
-    </div>
+    </section>
   );
 }
+
