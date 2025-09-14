@@ -6,13 +6,13 @@ import AnnouncementBar from "../components/AnnouncementBar";
 import AnalyticsProvider from "../components/AnalyticsProvider";
 
 export const metadata: Metadata = {
-  title: "[NOM_MARQUE] — Partenariat orienté résultats",
+  title: "Fynora — Partenariat orienté résultats",
   description: "Générez des résultats mesurables sans focaliser sur le prix. [BÉNÉFICES_CLÉS] avec un accompagnement humain.",
   openGraph: {
-    title: "[NOM_MARQUE] — Partenariat orienté résultats",
+    title: "Fynora — Partenariat orienté résultats",
     description: "[BÉNÉFICES_CLÉS] avec un accompagnement humain.",
     url: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
-    siteName: "[NOM_MARQUE]",
+    siteName: "Fynora",
     type: "website",
   },
   icons: { icon: "/favicon.ico" },
@@ -32,4 +32,3 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
-

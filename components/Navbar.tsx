@@ -31,10 +31,10 @@ export default function Navbar() {
       aria-label="Navigation principale"
     >
       <div className="container mx-auto flex items-center justify-between px-4 py-3">
-        <Link href="/" className="inline-flex items-center gap-2" aria-label="[NOM_MARQUE]">
+        <Link href="/" className="inline-flex items-center gap-2" aria-label="Fynora">
           <Image
             src="/fynora-logo.png"
-            alt="[NOM_MARQUE]"
+            alt="Fynora"
             width={112}
             height={40}
             className="h-10 w-auto"
@@ -76,4 +76,3 @@ export default function Navbar() {
     </nav>
   );
 }
-

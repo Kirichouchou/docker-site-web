@@ -12,7 +12,7 @@ export default function Hero() {
               Nouveau · Places limitées ce mois-ci
             </span>
             <h1 className="text-4xl md:text-5xl font-extrabold leading-tight tracking-tight">
-              [NOM_MARQUE] — obtenez des résultats concrets, pas juste un prix bas
+              Fynora — obtenez des résultats concrets, pas juste un prix bas
             </h1>
             <p className="mt-4 text-lg text-black/70">
               [BÉNÉFICES_CLÉS] : nous alignons votre réussite sur la nôtre.
@@ -45,4 +45,3 @@ export default function Hero() {
     </section>
   );
 }
-
