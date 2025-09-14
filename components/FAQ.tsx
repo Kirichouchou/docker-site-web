@@ -6,7 +6,7 @@ export default function FAQ() {
     },
     {
       q: "Puis-je annuler ?",
-      a: "Oui, sans engagement. Notre approche est partenariat-first : restez si la valeur est là.",
+      a: "Oui, sans engagement. Notre approche est orientée valeur : restez si la valeur est là.",
     },
     {
       q: "Proposez-vous un accompagnement ?",

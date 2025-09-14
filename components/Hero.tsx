@@ -12,7 +12,7 @@ export default function Hero() {
               Nouveau · Places limitées ce mois-ci
             </span>
             <h1 className="text-4xl md:text-5xl font-extrabold leading-tight tracking-tight">
-              Fynora — obtenez des résultats concrets, pas juste un prix bas
+              Fynora obtenez des résultats concrets, pas juste un prix bas
             </h1>
             <p className="mt-4 text-lg text-black/70">
               [BÉNÉFICES_CLÉS] : nous alignons votre réussite sur la nôtre.
@@ -27,7 +27,7 @@ export default function Hero() {
                 Démarrer ensemble
               </Link>
               <Link
-                href="/partenariat"
+                href="/contact"
                 className="inline-flex justify-center items-center rounded-lg px-6 py-3 min-h-12 bg-white text-foreground border border-border font-semibold hover:bg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-[hsl(var(--brand))]"
                 data-cta="hero_secondary"
               >
@@ -45,3 +45,4 @@ export default function Hero() {
     </section>
   );
 }
+

@@ -11,9 +11,9 @@ const offers: Offer[] = [
   {
     id: "essentiel",
     name: "Essentiel",
-    tagline: "Les bases pour passer à l’action.",
+    tagline: "Les bases pour passer à l'action.",
     benefits: [
-      "Audit et plan d’action priorisé",
+      "Audit et plan d'action priorisé",
       "Implémentations quick-wins",
       "1 session de revue mensuelle",
     ],
@@ -30,17 +30,6 @@ const offers: Offer[] = [
     ],
     price: { monthly: 490, yearly: 4900 },
     recommended: true,
-  },
-  {
-    id: "partenariat",
-    name: "Partenariat",
-    tagline: "Extension d’équipe, objectifs communs.",
-    benefits: [
-      "Roadmap conjointe et KPIs",
-      "Implémentation end-to-end",
-      "Ateliers, coaching, et reporting",
-    ],
-    price: { monthly: 990, yearly: 9900 },
   },
 ];
 
@@ -71,7 +60,7 @@ export default function HomePage() {
             <h2 id="offers" className="text-3xl font-bold">Offres orientées valeur</h2>
             <PricingToggle value={billing} onChange={setBilling} />
           </div>
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 gap-6">
             {offers.map((o) => (
               <OfferCard key={o.id} offer={o} billing={billing} />
             ))}
@@ -85,3 +74,4 @@ export default function HomePage() {
     </>
   );
 }
+

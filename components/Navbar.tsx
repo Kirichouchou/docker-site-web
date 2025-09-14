@@ -8,7 +8,6 @@ import { useEffect, useState } from "react";
 const navItems = [
   { href: "/", label: "Accueil" },
   { href: "/offres", label: "Offres" },
-  { href: "/partenariat", label: "Partenariat" },
   { href: "/contact", label: "Contact" },
 ];
 
@@ -35,9 +34,9 @@ export default function Navbar() {
           <Image
             src="/fynora-logo.png"
             alt="Fynora"
-            width={112}
-            height={40}
-            className="h-10 w-auto"
+            width={160}
+            height={48}
+            className="h-12 w-auto"
             priority
           />
         </Link>

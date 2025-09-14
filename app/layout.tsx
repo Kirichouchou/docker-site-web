@@ -6,10 +6,10 @@ import AnnouncementBar from "../components/AnnouncementBar";
 import AnalyticsProvider from "../components/AnalyticsProvider";
 
 export const metadata: Metadata = {
-  title: "Fynora — Partenariat orienté résultats",
+  title: "Fynora Résultats concrets",
   description: "Générez des résultats mesurables sans focaliser sur le prix. [BÉNÉFICES_CLÉS] avec un accompagnement humain.",
   openGraph: {
-    title: "Fynora — Partenariat orienté résultats",
+    title: "Fynora Résultats concrets",
     description: "[BÉNÉFICES_CLÉS] avec un accompagnement humain.",
     url: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
     siteName: "Fynora",

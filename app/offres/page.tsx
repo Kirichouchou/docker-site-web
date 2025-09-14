@@ -8,8 +8,8 @@ const offers: Offer[] = [
   {
     id: "essentiel",
     name: "Essentiel",
-    tagline: "Les bases pour passer à l’action.",
-    benefits: ["Audit et plan d’action", "Quick-wins", "1 revue/mois"],
+    tagline: "Les bases pour passer à l'action.",
+    benefits: ["Audit et plan d'action", "Quick-wins", "1 revue/mois"],
     price: { monthly: 190, yearly: 1900 },
   },
   {
@@ -19,13 +19,6 @@ const offers: Offer[] = [
     benefits: ["Tests A/B", "Design system", "2 revues/mois + async"],
     price: { monthly: 490, yearly: 4900 },
     recommended: true,
-  },
-  {
-    id: "partenariat",
-    name: "Partenariat",
-    tagline: "Extension d’équipe, objectifs communs.",
-    benefits: ["Roadmap", "Implémentation end-to-end", "Ateliers & coaching"],
-    price: { monthly: 990, yearly: 9900 },
   },
 ];
 
@@ -38,8 +31,8 @@ export default function OffresPage() {
           <h1 className="text-4xl font-extrabold tracking-tight">Nos offres</h1>
           <PricingToggle value={billing} onChange={setBilling} />
         </div>
-        <p className="text-black/70 mb-6">Choisissez un plan par objectifs. Les prix restent en second plan : l’important, ce sont les résultats.</p>
-        <div className="grid md:grid-cols-3 gap-6">
+        <p className="text-black/70 mb-6">Choisissez un plan par objectifs. Les prix restent en second plan : l'important, ce sont les résultats.</p>
+        <div className="grid md:grid-cols-2 gap-6">
           {offers.map((o) => (
             <OfferCard key={o.id} offer={o} billing={billing} />
           ))}
@@ -48,3 +41,4 @@ export default function OffresPage() {
     </div>
   );
 }
+
