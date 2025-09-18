@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;   // pas de SSG/ISR pour cette route
 import { NextResponse } from "next/server";
 import { prisma } from "../../../lib/prisma";
 
