@@ -3,21 +3,25 @@ FROM node:20-alpine AS builder
 RUN corepack enable
 WORKDIR /app
 
-# 1) copier manifest + prisma avant install
+# 1) Copier manifest + prisma
 COPY package.json pnpm-lock.yaml ./
 COPY prisma ./prisma
 
-# 2) installer deps (le postinstall prisma peut tourner car le schema est là)
+# 2) Empêcher prisma generate auto pendant install/prune
+ENV PRISMA_SKIP_POSTINSTALL_GENERATE=true
+
+# 3) Installer deps
 RUN pnpm install --frozen-lockfile
 
-# 3) copier le reste du code
+# 4) Copier le reste
 COPY . .
 
-# 4) générer prisma (utile si tu as PRISMA_SKIP_POSTINSTALL_GENERATE=true)
-RUN pnpm prisma generate || true
+# 5) Générer Prisma client (manuellement)
+RUN pnpm prisma generate
 
-# 5) build app + prune prod
-RUN pnpm build && pnpm prune --prod
+# 6) Build puis prune prod (toujours avec le skip actif)
+RUN pnpm build
+RUN pnpm prune --prod
 
 # --- runner ---
 FROM node:20-alpine
