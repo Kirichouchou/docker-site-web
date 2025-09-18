@@ -1,19 +1,29 @@
 name: Build & Deploy
-on: { push: { branches: [main] } }
+on:
+  push:
+    branches: [ main ]   # adapte si tu bosses sur une autre branche
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions: { contents: read, packages: write }
+    permissions:
+      contents: read
+      packages: write   # autorise push sur GHCR
     steps:
       - uses: actions/checkout@v4
-      - uses: docker/setup-buildx-action@v3
-      - uses: docker/login-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: docker/build-push-action@v6
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
         with:
           context: .
           push: true
@@ -23,16 +33,22 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: appleboy/ssh-action@v1.2.0
+      - name: Setup SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          port: ${{ secrets.SSH_PORT }}
-          key: ${{ secrets.SSH_KEY }}
-          script: |
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+
+      - name: Add VPS to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p "${{ secrets.SSH_PORT }}" "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Deploy on VPS
+        run: |
+          ssh -p "${{ secrets.SSH_PORT }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" << 'EOF'
             docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
-            mkdir -p /opt/site
-            # docker-compose.yml doit exister sur le VPS à /opt/site/docker-compose.yml
-            docker pull ghcr.io/${{ github.repository }}:latest
-            docker compose -f /opt/site/docker-compose.yml up -d
+            cd /opt/site
+            docker compose pull
+            docker compose up -d
             docker image prune -f
+          EOF
