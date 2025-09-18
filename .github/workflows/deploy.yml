@@ -1,54 +1,50 @@
 name: Build & Deploy
 on:
   push:
-    branches: [ main ]   # adapte si tu bosses sur une autre branche
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write   # autorise push sur GHCR
+    permissions: { contents: read, packages: write }
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push Docker image
+      # 👇 construit le nom d'image en lowercase
+      - name: Compute image tag (lowercase)
+        run: echo "IMAGE=ghcr.io/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+      - name: Build and push
         uses: docker/build-push-action@v6
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository }}:latest
-
+          tags: ${{ env.IMAGE }}:latest
   deploy:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Setup SSH agent
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_KEY }}
-
-      - name: Add VPS to known_hosts
-        run: |
+      - uses: webfactory/ssh-agent@v0.9.0
+        with: { ssh-private-key: ${{ secrets.SSH_KEY }} }
+      - run: |
           mkdir -p ~/.ssh
           ssh-keyscan -p "${{ secrets.SSH_PORT }}" "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
-
       - name: Deploy on VPS
+        env:
+          IMAGE: ghcr.io/${{ github.repository }}   # on va le recalculer en bash côté VPS
         run: |
-          ssh -p "${{ secrets.SSH_PORT }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" << 'EOF'
+          LOWER_IMAGE=$(echo "${IMAGE}" | tr '[:upper:]' '[:lower:]')
+          ssh -p "${{ secrets.SSH_PORT }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" << EOF
             docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
             cd /opt/site
-            docker compose pull
+            # si ton docker-compose.yml référence l'image, assure-toi qu'elle est en minuscules aussi
+            docker pull ${LOWER_IMAGE}:latest
             docker compose up -d
             docker image prune -f
           EOF
