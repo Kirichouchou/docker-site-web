@@ -54,6 +54,8 @@ jobs:
       - name: Deploy on VPS
         env:
           IMAGE: ${{ needs.build.outputs.image }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTOR: ${{ github.actor }}
         run: |
           ssh -p "${{ secrets.SSH_PORT }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
             "docker login ghcr.io -u ${GITHUB_ACTOR} -p ${GITHUB_TOKEN} && \
@@ -61,6 +63,3 @@ jobs:
              cd /opt/site && \
              docker compose up -d && \
              docker image prune -f"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_ACTOR: ${{ github.actor }}
