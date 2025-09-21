@@ -37,9 +37,7 @@ export default function OfferCard({ offer, billing = "monthly" }: { offer: Offer
         ))}
       </ul>
       <div className="mt-auto">
-        <div className="text-sm text-black/60 mb-2">À partir de</div>
         <div className="text-3xl font-extrabold tracking-tight">{price}€</div>
-        <div className="text-xs text-black/50 mb-4">{billing === "monthly" ? "/mois" : "/an"} · prix en second plan, valeur d’abord</div>
         <Link
           href={`/commande?offer=${encodeURIComponent(offer.id)}&label=${encodeURIComponent(offer.name)}&price=${encodeURIComponent(String(price))}`}
           className="w-full inline-flex justify-center items-center rounded-lg px-4 py-3 min-h-12 bg-[hsl(var(--brand))] text-[hsl(var(--brand-foreground))] font-semibold hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[hsl(var(--brand))]"

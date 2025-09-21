@@ -15,8 +15,7 @@ export default function Hero() {
               Fynora obtenez des résultats concrets, pas juste un prix bas
             </h1>
             <p className="mt-4 text-lg text-black/70">
-              [BÉNÉFICES_CLÉS] : nous alignons votre réussite sur la nôtre.
-              Commencez avec un plan guidé, un accompagnement humain et des livrables mesurables.
+              Nos créations allient design élégant et stratégie intelligente pour transformer vos visiteurs en clients fidèles.
             </p>
             <div className="mt-6 flex flex-col sm:flex-row gap-3">
               <Link
@@ -45,4 +44,3 @@ export default function Hero() {
     </section>
   );
 }
-

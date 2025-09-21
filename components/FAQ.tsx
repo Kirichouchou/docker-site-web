@@ -1,16 +1,28 @@
 export default function FAQ() {
   const items = [
     {
-      q: "Combien de temps pour voir des résultats ?",
-      a: "La plupart des clients observent un impact en 2 à 4 semaines grâce aux quick wins et aux itérations guidées.",
+      q: "Combien de temps faut-il pour créer mon site ?",
+      a: "En moyenne, un site est prêt en 7 à 14 jours après validation de votre commande. Tout dépend du niveau de personnalisation demandé.",
     },
     {
-      q: "Puis-je annuler ?",
-      a: "Oui, sans engagement. Notre approche est orientée valeur : restez si la valeur est là.",
+      q: "Est-ce que mon site sera visible sur téléphone ?",
+      a: "Oui ! Tous nos sites sont 100 % responsives : ils s’adaptent automatiquement à ordinateur, tablette et smartphone.",
     },
     {
-      q: "Proposez-vous un accompagnement ?",
-      a: "Oui, nous incluons des points réguliers et des feedbacks asynchrones pour garder le rythme.",
+      q: "Est-ce que je peux modifier mon site après la livraison ?",
+      a: "Bien sûr. Vous aurez un accès pour modifier textes et images. Et si vous préférez, nous pouvons aussi le faire pour vous (sur devis).",
+    },
+    {
+      q: "Comment se passe le paiement ?",
+      a: "Le paiement se fait en ligne, de manière sécurisée. Une facture est automatiquement générée et envoyée par email.",
+    },
+    {
+      q: "Que se passe-t-il si j’ai un problème technique ?",
+      a: "Pas d’inquiétude ! Notre support est disponible par mail pour répondre à vos questions et résoudre les soucis techniques rapidement.",
+    },
+    {
+      q: "Puis-je ajouter plus de fonctionnalités plus tard (ex : réservation en ligne, Click & Collect, blog…) ?",
+      a: "Oui. Votre site est pensé pour évoluer. Vous pouvez démarrer simple et ajouter des fonctionnalités à mesure que vos besoins grandissent.",
     },
   ];
   return (
@@ -29,4 +41,3 @@ export default function FAQ() {
     </section>
   );
 }
-
