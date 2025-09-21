@@ -2,27 +2,27 @@ export default function FAQ() {
   const items = [
     {
       q: "Combien de temps faut-il pour créer mon site ?",
-      a: "En moyenne, un site est prêt en 7 à 14 jours après validation de votre commande. Tout dépend du niveau de personnalisation demandé.",
+      a: "En moyenne, votre site est prêt en 7 à 14 jours après validation de votre commande. Le délai dépend du niveau de personnalisation choisi, mais nous respectons toujours nos engagements.",
     },
     {
       q: "Est-ce que mon site sera visible sur téléphone ?",
-      a: "Oui ! Tous nos sites sont 100 % responsives : ils s’adaptent automatiquement à ordinateur, tablette et smartphone.",
+      a: "Oui. Tous nos sites sont conçus en version responsive : ils s’adaptent automatiquement aux ordinateurs, tablettes et smartphones pour offrir une expérience optimale à vos visiteurs.",
     },
     {
-      q: "Est-ce que je peux modifier mon site après la livraison ?",
-      a: "Bien sûr. Vous aurez un accès pour modifier textes et images. Et si vous préférez, nous pouvons aussi le faire pour vous (sur devis).",
-    },
-    {
-      q: "Comment se passe le paiement ?",
-      a: "Le paiement se fait en ligne, de manière sécurisée. Une facture est automatiquement générée et envoyée par email.",
+      q: "Serai-je accompagné après la mise en ligne ?",
+      a: "Oui. Nous restons à vos côtés même après la livraison. Vous bénéficiez d’un suivi personnalisé et d’un interlocuteur dédié pour répondre à vos questions et vous aider à faire évoluer votre site.",
     },
     {
       q: "Que se passe-t-il si j’ai un problème technique ?",
-      a: "Pas d’inquiétude ! Notre support est disponible par mail pour répondre à vos questions et résoudre les soucis techniques rapidement.",
+      a: "Notre support est à votre écoute par mail. Nous répondons rapidement à vos questions et intervenons pour résoudre tout souci technique afin que votre site reste toujours opérationnel.",
     },
     {
-      q: "Puis-je ajouter plus de fonctionnalités plus tard (ex : réservation en ligne, Click & Collect, blog…) ?",
-      a: "Oui. Votre site est pensé pour évoluer. Vous pouvez démarrer simple et ajouter des fonctionnalités à mesure que vos besoins grandissent.",
+      q: "Mon site sera-t-il sécurisé et conforme au RGPD ?",
+      a: "Oui. Chaque site est livré avec un certificat SSL (https) garantissant la sécurité des échanges. Nous intégrons également les éléments nécessaires au respect du RGPD afin de protéger vos données et celles de vos clients.",
+    },
+    {
+      q: "Est-ce que mon site sera bien référencé sur Google ?",
+      a: "Votre site est optimisé techniquement pour un référencement naturel efficace dès sa mise en ligne. Pour aller plus loin, nous proposons des prestations SEO avancées afin d’améliorer durablement votre visibilité.",
     },
   ];
   return (
