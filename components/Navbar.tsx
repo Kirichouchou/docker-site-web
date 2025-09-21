@@ -68,7 +68,7 @@ export default function Navbar() {
             className="inline-flex items-center rounded-lg px-4 py-2 min-h-11 bg-[hsl(var(--brand))] text-[hsl(var(--brand-foreground))] shadow-soft hover:opacity-90 transition"
             data-cta="nav_primary"
           >
-            Démarrer ensemble
+            Lancer mon projet
           </Link>
         </div>
       </div>

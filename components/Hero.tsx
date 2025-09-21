@@ -12,10 +12,10 @@ export default function Hero() {
               Nouveau · Places limitées ce mois-ci
             </span>
             <h1 className="text-4xl md:text-5xl font-extrabold leading-tight tracking-tight">
-              Fynora obtenez des résultats concrets, pas juste un prix bas
+              Un site internet n’est pas qu’une vitrine
             </h1>
             <p className="mt-4 text-lg text-black/70">
-              Nos créations allient design élégant et stratégie intelligente pour transformer vos visiteurs en clients fidèles.
+              C’est un outil pour attirer, convaincre et fidéliser vos clients. Chez Fynora, nous créons des sites qui ne se contentent pas de présenter vos offres : ils racontent une histoire, inspirent confiance et déclenchent l’envie d’agir.
             </p>
             <div className="mt-6 flex flex-col sm:flex-row gap-3">
               <Link
@@ -23,7 +23,7 @@ export default function Hero() {
                 className="inline-flex justify-center items-center rounded-lg px-6 py-3 min-h-12 bg-[hsl(var(--brand))] text-[hsl(var(--brand-foreground))] font-semibold shadow-soft hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[hsl(var(--brand))]"
                 data-cta="hero_primary"
               >
-                Démarrer ensemble
+                Lancer mon projet
               </Link>
               <Link
                 href="/contact"

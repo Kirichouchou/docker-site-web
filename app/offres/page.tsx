@@ -41,7 +41,7 @@ export default function OffresPage() {
         <div className="flex items-center justify-between gap-4 mb-6">
           <h1 className="text-4xl font-extrabold tracking-tight">Nos offres</h1>
         </div>
-        <p className="text-black/70 mb-6">Choisissez un plan par objectifs. Les prix restent en second plan : l'important, ce sont les résultats.</p>
+        <p className="text-black/70 mb-6">Nos offres s’adaptent à vos objectifs : une présence en ligne claire ou une solution digitale complète pour accélérer votre croissance.</p>
         <div className="grid md:grid-cols-2 gap-6">
           {offers.map((o) => (
             <OfferCard key={o.id} offer={o} />
