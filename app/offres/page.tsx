@@ -5,28 +5,31 @@ import OfferCard, { type Offer } from "../../components/OfferCard";
 const offers: Offer[] = [
   {
     id: "essentiel",
-    name: "Offre Essentiel – 290 €",
-    tagline: "Un site qui va droit au but : esthétique, clair et prêt à convaincre.",
+    name: "Offre Essentiel",
+    tagline:
+      "Bien plus qu’un site vitrine : une présence qui inspire confiance. Pensé pour les indépendants et petites structures, l’Essentiel offre un site élégant et efficace, conçu pour valoriser votre image et affirmer votre présence en ligne.",
     benefits: [
-      "Un design qui inspire confiance dès le premier regard",
-      "Un parcours pensé pour guider vos visiteurs vers l’action",
-      "Compatible mobile, tablette et ordinateur",
-      "Hébergement & maintenance technique : 5 €/mois",
+      "Design moderne et harmonieux, adapté à votre activité",
+      "Pages essentielles (Accueil, Services, Contact)",
+      "Optimisation technique SEO pour être trouvé sur Google",
+      "Gestion technique et suivi inclus : sécurité, mises à jour et corrections assurées",
+      "Hébergement au choix : vous pouvez utiliser votre propre solution ou nous confier l’hébergement pour 5 €/mois.",
+      "Votre site est évolutif : vous pourrez ajouter de nouvelles fonctionnalités quand vos besoins grandiront (sur devis).",
     ],
     price: { monthly: 290, yearly: 2900 },
   },
   {
     id: "cro",
-    name: "Offre Pro – 590 €",
-    tagline: "Votre histoire mérite un site qui captive et engage.",
+    name: "Offre Sur-mesure – sur devis",
+    tagline:
+      "Un site qui dépasse la vitrine pour devenir un véritable outil de croissance. Destinée aux marques ambitieuses, cette offre associe design exclusif et stratégie digitale pour transformer votre site en un outil puissant, capable de séduire, convaincre et fidéliser vos clients. Chaque projet est conçu sur-mesure, après une étude approfondie de vos objectifs, avec un devis transparent et adapté à vos ambitions.",
     benefits: [
-      "Design travaillé pour créer de l’émotion et marquer les esprits",
-      "Intégration possible : réservation, catalogue, galerie, ou mise en avant de vos produits",
-      "Optimisé pour convertir vos visiteurs en clients fidèles",
-      "2 ajustements inclus après la mise en ligne pour affiner les détails",
-      "Hébergement & maintenance technique : 5 €/mois",
+      "Design unique et haut de gamme, façonné à l’image de votre marque",
+      "Intégration de fonctionnalités avancées selon vos besoins : réservation en ligne, Click & Collect, multilingue, e-commerce complet…",
+      "Stratégie de conversion et accompagnement marketing pour générer des résultats mesurables",
+      "Suivi premium : interlocuteur dédié, ajustements continus, optimisation de vos performances",
     ],
-    price: { monthly: 590, yearly: 5900 },
+    price: { monthly: 0, yearly: 0 },
     recommended: true,
   },
 ];
