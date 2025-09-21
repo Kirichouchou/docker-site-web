@@ -34,9 +34,9 @@ export default function Navbar() {
           <Image
             src="/fynora-logo.png"
             alt="Fynora"
-            width={160}
-            height={48}
-            className="h-12 w-auto"
+            width={213}
+            height={64}
+            className="h-16 w-auto"
             priority
           />
         </Link>
