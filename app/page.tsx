@@ -2,39 +2,39 @@
 
 import Hero from "../components/Hero";
 import OfferCard, { type Offer } from "../components/OfferCard";
-import PricingToggle from "../components/PricingToggle";
 import FAQ from "../components/FAQ";
 import CTASection from "../components/CTASection";
-import { useState } from "react";
 
 const offers: Offer[] = [
   {
     id: "essentiel",
-    name: "Essentiel",
-    tagline: "Les bases pour passer à l'action.",
+    name: "Offre Essentiel – 290 €",
+    tagline: "Un site qui va droit au but : esthétique, clair et prêt à convaincre.",
     benefits: [
-      "Audit et plan d'action priorisé",
-      "Implémentations quick-wins",
-      "1 session de revue mensuelle",
+      "Un design qui inspire confiance dès le premier regard",
+      "Un parcours pensé pour guider vos visiteurs vers l’action",
+      "Compatible mobile, tablette et ordinateur",
+      "Hébergement & maintenance technique : 5 €/mois",
     ],
-    price: { monthly: 190, yearly: 1900 },
+    price: { monthly: 290, yearly: 2900 },
   },
   {
     id: "cro",
-    name: "CRO+",
-    tagline: "Itérations rapides orientées résultats.",
+    name: "Offre Pro – 590 €",
+    tagline: "Votre histoire mérite un site qui captive et engage.",
     benefits: [
-      "Expériences A/B prioritaires",
-      "Design system conversion-first",
-      "2 sessions / mois + support async",
+      "Design travaillé pour créer de l’émotion et marquer les esprits",
+      "Intégration possible : réservation, catalogue, galerie, ou mise en avant de vos produits",
+      "Optimisé pour convertir vos visiteurs en clients fidèles",
+      "2 ajustements inclus après la mise en ligne pour affiner les détails",
+      "Hébergement & maintenance technique : 5 €/mois",
     ],
-    price: { monthly: 490, yearly: 4900 },
+    price: { monthly: 590, yearly: 5900 },
     recommended: true,
   },
 ];
 
 export default function HomePage() {
-  const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
   return (
     <>
       <Hero />
@@ -58,11 +58,10 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between gap-4 mb-6">
             <h2 id="offers" className="text-3xl font-bold">Offres orientées valeur</h2>
-            <PricingToggle value={billing} onChange={setBilling} />
           </div>
           <div className="grid md:grid-cols-2 gap-6">
             {offers.map((o) => (
-              <OfferCard key={o.id} offer={o} billing={billing} />
+              <OfferCard key={o.id} offer={o} />
             ))}
           </div>
         </div>
@@ -74,4 +73,3 @@ export default function HomePage() {
     </>
   );
 }
-
