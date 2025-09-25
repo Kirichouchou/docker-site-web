@@ -17,7 +17,7 @@ export const CATALOG = [
     bullets: [
       "Accès complet à la formation",
       "Mises à jour incluses",
-      "Support prioritaire",
+      "Support réactif",
     ],
     tag: "Le plus populaire",
     image: { src: "/images/productA.jpg", alt: "Pack Pro", width: 1200, height: 800 },

@@ -6,14 +6,6 @@ export default function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const items = [
     {
-      q: "Combien de temps faut-il pour créer mon site ?",
-      a: "En moyenne, votre site est prêt en 7 à 14 jours après validation de votre commande. Le délai dépend du niveau de personnalisation choisi, mais nous respectons toujours nos engagements.",
-    },
-    {
-      q: "Est-ce que mon site sera visible sur téléphone ?",
-      a: "Oui. Tous nos sites sont conçus en version responsive : ils s’adaptent automatiquement aux ordinateurs, tablettes et smartphones pour offrir une expérience optimale à vos visiteurs.",
-    },
-    {
       q: "Serai-je accompagné après la mise en ligne ?",
       a: "Oui. Nous restons à vos côtés même après la livraison. Vous bénéficiez d’un suivi personnalisé et d’un interlocuteur dédié pour répondre à vos questions et vous aider à faire évoluer votre site.",
     },

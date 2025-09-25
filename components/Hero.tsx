@@ -33,7 +33,7 @@ export default function Hero() {
                 Parler à un expert
               </Link>
             </div>
-            <p className="mt-3 text-sm text-black/60">Garantie satisfaction · Annulable à tout moment · Support prioritaire</p>
+            <p className="mt-3 text-sm text-black/60">Satisfaction garantie · Support réactif · Paiement sécurisé</p>
           </div>
 
           <div className="rounded-lg overflow-hidden border border-border shadow-soft">
