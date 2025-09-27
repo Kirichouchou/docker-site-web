@@ -36,14 +36,22 @@ export default function OfferCard({ offer, billing = "monthly" }: { offer: Offer
           </li>
         ))}
       </ul>
-      <div className="mt-auto">
+      <div className="mt-auto grid grid-cols-1 sm:grid-cols-2 gap-2">
         <Link
           href={`/commande?offer=${encodeURIComponent(offer.id)}&label=${encodeURIComponent(offer.name)}&price=${encodeURIComponent(String(price))}`}
           className="w-full inline-flex justify-center items-center rounded-lg px-4 py-3 min-h-12 bg-[hsl(var(--brand))] text-[hsl(var(--brand-foreground))] font-semibold hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[hsl(var(--brand))]"
-          data-cta={`offer_${offer.id}_contact`}
-          aria-label={`${offer.name} — nous contacter`}
+          data-cta={`offer_${offer.id}_devis`}
+          aria-label={`${offer.name} — demander un devis`}
         >
-          Nous contacter
+          Demander un devis sur-mesure
+        </Link>
+        <Link
+          href="/contact"
+          className="w-full inline-flex justify-center items-center rounded-lg px-4 py-3 min-h-12 bg-white border border-border font-semibold hover:bg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-[hsl(var(--brand))]"
+          data-cta={`offer_${offer.id}_expert`}
+          aria-label={`${offer.name} — parler à un expert`}
+        >
+          Parler à un expert
         </Link>
       </div>
     </div>

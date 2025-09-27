@@ -15,7 +15,7 @@ export default function Hero() {
               Un site internet n’est pas qu’une vitrine
             </h1>
             <p className="mt-4 text-lg text-black/70">
-              C’est un outil pour attirer, convaincre et fidéliser vos clients. Chez Fynora, nous créons des sites qui ne se contentent pas de présenter vos offres : ils racontent une histoire, inspirent confiance et déclenchent l’envie d’agir.
+              C’est un outil pour attirer, convaincre et fidéliser vos clients. Chez Fynora, nous créons des sites qui ne se contentent pas de présenter vos services : ils racontent une histoire, inspirent confiance et déclenchent l’envie d’agir.
             </p>
             <div className="mt-6 flex flex-col sm:flex-row gap-3">
               <Link

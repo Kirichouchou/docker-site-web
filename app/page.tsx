@@ -9,14 +9,13 @@ import CTASection from "../components/CTASection";
 const offers: Offer[] = [
   {
     id: "cro",
-    name: "Offre Sur-mesure – sur devis",
-    tagline: "Un site exclusif, pensé comme un véritable outil de croissance.",
+    name: "Une offre unique : votre site sur-mesure",
+    tagline: "Un projet conçu pour vos objectifs, qu’il s’agisse de lancer votre activité, développer vos ventes en ligne ou bâtir une marque digitale forte.",
     benefits: [
-      "Design premium, façonné à l’image de votre marque",
-      "Fonctionnalités avancées : réservation, Click & Collect, e-commerce, multilingue…",
-      "Stratégie de conversion et accompagnement marketing",
-      "Suivi premium : interlocuteur dédié, ajustements, optimisation continue",
-      "Projet conçu sur-mesure, après étude de vos objectifs. Devis transparent et adapté.",
+      "Design exclusif : une création alignée avec votre identité",
+      "Fonctionnalités adaptées : e-commerce, Click & Collect, réservation, multilingue…",
+      "Performance et visibilité : un site pensé pour attirer et convertir",
+      "Accompagnement dédié : un partenaire à vos côtés sur la durée",
     ],
     price: { monthly: 0, yearly: 0 },
     recommended: true,
@@ -32,16 +31,16 @@ export default function HomePage() {
       {/* Catégories/atouts principaux */}
       <Features />
 
-      {/* Offres */}
-      <section className="section" aria-labelledby="offers">
+      {/* Services */}
+      <section className="section" aria-labelledby="services">
         <div className="container mx-auto px-4">
           <div className="mb-6 text-center">
-            <h2 id="offers" className="text-3xl font-bold">Nos offres</h2>
+            <h2 id="services" className="text-3xl font-bold">Nos services</h2>
           </div>
           <div
             className={
               single
-                ? "mx-auto max-w-lg grid grid-cols-1 gap-6"
+                ? "mx-auto max-w-3xl grid grid-cols-1 gap-6"
                 : "mx-auto max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6 justify-items-center"
             }
           >

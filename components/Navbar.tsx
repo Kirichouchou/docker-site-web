@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 
 const navItems = [
   { href: "/", label: "Accueil" },
-  { href: "/offres", label: "Offres" },
+  { href: "/offres", label: "Services" },
   { href: "/contact", label: "Contact" },
 ];
 
@@ -29,7 +29,7 @@ export default function Navbar() {
       role="navigation"
       aria-label="Navigation principale"
     >
-      <div className="container mx-auto flex items-center justify-between px-4 py-3">
+      <div className="container mx-auto grid grid-cols-3 items-center px-4 py-3">
         <Link href="/" className="inline-flex items-center gap-2" aria-label="Fynora">
           <Image
             src="/fynora-logo.png"
@@ -41,7 +41,7 @@ export default function Navbar() {
           />
         </Link>
 
-        <div className="hidden md:flex items-center gap-6">
+        <div className="hidden md:flex items-center justify-center gap-6">
           {navItems.map((item) => {
             const active = pathname === item.href;
             return (
@@ -62,7 +62,7 @@ export default function Navbar() {
           })}
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center justify-end gap-3">
           <Link
             href="/offres"
             className="inline-flex items-center rounded-lg px-4 py-2 min-h-11 bg-[hsl(var(--brand))] text-[hsl(var(--brand-foreground))] shadow-soft hover:opacity-90 transition"
