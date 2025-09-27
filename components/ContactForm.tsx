@@ -17,6 +17,51 @@ export default function ContactForm() {
   }, [priceParam]);
 
   const [withHosting, setWithHosting] = useState<boolean>(initialHosting);
+  const [pending, setPending] = useState(false);
+  const [status, setStatus] = useState<null | { ok: boolean; msg: string }>(null);
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setStatus(null);
+    const form = e.currentTarget;
+    const fd = new FormData(form);
+    const name = String(fd.get("name") || "").trim();
+    const email = String(fd.get("email") || "").trim();
+    const message = String(fd.get("message") || "").trim();
+
+    if (!name || !email || !message) {
+      setStatus({ ok: false, msg: "Veuillez remplir tous les champs." });
+      return;
+    }
+
+    const options = {
+      offer: selectedOffer || undefined,
+      label: selectedLabel || undefined,
+      price: price ?? undefined,
+      hosting: withHosting,
+      hostingFee,
+    };
+
+    try {
+      setPending(true);
+      const res = await fetch("/api/commande", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, message, options }),
+      });
+      const data = await res.json();
+      if (res.ok && data?.success) {
+        setStatus({ ok: true, msg: "Demande envoyée avec succès." });
+        form.reset();
+      } else {
+        setStatus({ ok: false, msg: data?.error || "Erreur inconnue." });
+      }
+    } catch (err) {
+      setStatus({ ok: false, msg: "Erreur réseau." });
+    } finally {
+      setPending(false);
+    }
+  }
 
   return (
     <>
@@ -44,7 +89,7 @@ export default function ContactForm() {
         </aside>
       )}
 
-      <form className="mt-6 space-y-4" action="mailto:contact@example.com" method="post">
+      <form className="mt-6 space-y-4" onSubmit={onSubmit}>
         {/* Hidden fields to transmit selection */}
         <input type="hidden" name="offer" value={selectedOffer} />
         <input type="hidden" name="label" value={selectedLabel} />
@@ -64,11 +109,13 @@ export default function ContactForm() {
           <label htmlFor="message" className="block text-sm font-semibold">Message</label>
           <textarea id="message" name="message" rows={5} required className="mt-1 w-full rounded-lg border border-border px-3 py-2" placeholder="Précisez vos besoins, délais, budget."></textarea>
         </div>
-        <button type="submit" className="inline-flex items-center rounded-lg px-6 py-3 min-h-12 bg-[hsl(var(--brand))] text-[hsl(var(--brand-foreground))] font-semibold">
-          Envoyer
+        <button type="submit" disabled={pending} className="inline-flex items-center rounded-lg px-6 py-3 min-h-12 bg-[hsl(var(--brand))] text-[hsl(var(--brand-foreground))] font-semibold disabled:opacity-60">
+          {pending ? "Envoi..." : "Envoyer"}
         </button>
+        {status && (
+          <p className={`text-sm ${status.ok ? "text-green-600" : "text-red-600"}`}>{status.msg}</p>
+        )}
       </form>
     </>
   );
 }
-
