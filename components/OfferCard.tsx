@@ -43,7 +43,7 @@ export default function OfferCard({ offer, billing = "monthly" }: { offer: Offer
           data-cta={`offer_${offer.id}_devis`}
           aria-label={`${offer.name} — demander un devis`}
         >
-          Demander un devis sur-mesure
+          Demander un devis sur mesure
         </Link>
         <Link
           href="/contact"
