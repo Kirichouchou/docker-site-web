@@ -8,21 +8,6 @@ import CTASection from "../components/CTASection";
 
 const offers: Offer[] = [
   {
-    id: "essentiel",
-    name: "Offre Essentiel",
-    tagline:
-      "Un site vitrine élégant et efficace pour affirmer votre présence en ligne.",
-    benefits: [
-      "Design moderne et harmonieux",
-      "Pages essentielles (Accueil, Services, Contact)",
-      "SEO technique de base pour être trouvé sur Google",
-      "Gestion technique et suivi inclus : sécurité, mises à jour, corrections",
-      "Hébergement au choix : vous gérez ou nous confiez pour 5 €/mois.",
-      "Site évolutif : nouvelles fonctionnalités possibles sur devis.",
-    ],
-    price: { monthly: 290, yearly: 2900 },
-  },
-  {
     id: "cro",
     name: "Offre Sur-mesure – sur devis",
     tagline: "Un site exclusif, pensé comme un véritable outil de croissance.",
@@ -39,6 +24,7 @@ const offers: Offer[] = [
 ];
 
 export default function HomePage() {
+  const single = offers.length === 1;
   return (
     <>
       <Hero />
@@ -49,12 +35,18 @@ export default function HomePage() {
       {/* Offres */}
       <section className="section" aria-labelledby="offers">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between gap-4 mb-6">
+          <div className="mb-6 text-center">
             <h2 id="offers" className="text-3xl font-bold">Nos offres</h2>
           </div>
-          <div className="mx-auto max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6 justify-items-center">
+          <div
+            className={
+              single
+                ? "mx-auto max-w-lg grid grid-cols-1 gap-6"
+                : "mx-auto max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6 justify-items-center"
+            }
+          >
             {offers.map((o) => (
-              <div key={o.id} className="w-full">
+              <div key={o.id} className={single ? "w-full" : "w-full"}>
                 <OfferCard offer={o} />
               </div>
             ))}
