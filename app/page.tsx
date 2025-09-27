@@ -1,6 +1,7 @@
 "use client";
 
 import Hero from "../components/Hero";
+import Features from "../components/Features";
 import OfferCard, { type Offer } from "../components/OfferCard";
 import FAQ from "../components/FAQ";
 import CTASection from "../components/CTASection";
@@ -42,19 +43,8 @@ export default function HomePage() {
     <>
       <Hero />
 
-      {/* Preuve / Social proof */}
-      <section className="section" aria-labelledby="proof">
-        <div className="container mx-auto px-4">
-          <h2 id="proof" className="sr-only">Preuves</h2>
-          <div className="grid md:grid-cols-3 gap-6">
-            {["+38% conversion", "LTV +24%", "Time-to-value 2 semaines"].map((stat) => (
-              <div key={stat} className="rounded-lg border border-border p-4 bg-white text-center font-semibold">
-                {stat}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Catégories/atouts principaux */}
+      <Features />
 
       {/* Offres */}
       <section className="section" aria-labelledby="offers">
@@ -62,9 +52,11 @@ export default function HomePage() {
           <div className="flex items-center justify-between gap-4 mb-6">
             <h2 id="offers" className="text-3xl font-bold">Nos offres</h2>
           </div>
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="mx-auto max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6 justify-items-center">
             {offers.map((o) => (
-              <OfferCard key={o.id} offer={o} />
+              <div key={o.id} className="w-full">
+                <OfferCard offer={o} />
+              </div>
             ))}
           </div>
         </div>
