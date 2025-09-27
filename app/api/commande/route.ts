@@ -1,7 +1,6 @@
 export const runtime = "nodejs";
 
 import { NextRequest, NextResponse } from "next/server";
-import { transporter } from "@/lib/mail";
 import { isEmail } from "@/lib/validation";
 
 type CommandePayload = {
@@ -36,6 +35,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Champs invalides" }, { status: 400 });
     }
 
+    const hasSMTP = !!(
+      process.env.SMTP_HOST &&
+      process.env.SMTP_PORT &&
+      process.env.SMTP_USER &&
+      process.env.SMTP_PASS
+    );
+    if (!hasSMTP) {
+      console.warn("SMTP non configuré, build passe mais email désactivé");
+      return NextResponse.json({ success: true, mail: false });
+    }
+
     const to = process.env.COMMANDE_TO || process.env.SMTP_USER;
     if (!to) {
       return NextResponse.json({ error: "Configuration email manquante" }, { status: 500 });
@@ -56,6 +66,14 @@ export async function POST(req: NextRequest) {
       optionsSummary,
     ].join("\n");
 
+    const host = process.env.SMTP_HOST!;
+    const port = Number(process.env.SMTP_PORT!);
+    const user = process.env.SMTP_USER!;
+    const pass = process.env.SMTP_PASS!;
+    const secure = port === 465;
+
+    const nm = await import("nodemailer");
+    const transporter = nm.default.createTransport({ host, port, secure, auth: { user, pass } });
     await transporter.sendMail({
       from: `Site Web <${fromAddr}>`,
       to,
@@ -69,4 +87,3 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
   }
 }
-
