@@ -1,7 +1,6 @@
 export const runtime = "nodejs";
 
 import { NextRequest, NextResponse } from "next/server";
-import { transporter } from "@/lib/mail";
 import { isEmail } from "@/lib/validation";
 
 type ContactPayload = {
@@ -13,6 +12,19 @@ type ContactPayload = {
 
 export async function POST(req: NextRequest) {
   try {
+    if (
+      !process.env.SMTP_HOST ||
+      !process.env.SMTP_PORT ||
+      !process.env.SMTP_USER ||
+      !process.env.SMTP_PASS
+    ) {
+      console.warn("⚠️ SMTP non configuré → pas d'envoi d'email");
+      return new Response(
+        JSON.stringify({ ok: true, mail: false, error: "SMTP non configuré" }),
+        { status: 200 }
+      );
+    }
+
     const body = (await req.json()) as Partial<ContactPayload> | null;
     const name = String(body?.name ?? "").trim();
     const email = String(body?.email ?? "").trim();
@@ -38,6 +50,15 @@ export async function POST(req: NextRequest) {
       message,
     ].join("\n");
 
+    const host = process.env.SMTP_HOST!;
+    const port = Number(process.env.SMTP_PORT!);
+    const user = process.env.SMTP_USER!;
+    const pass = process.env.SMTP_PASS!;
+    const secure = port === 465;
+
+    const nm = await import("nodemailer");
+    const transporter = nm.default.createTransport({ host, port, secure, auth: { user, pass } });
+
     await transporter.sendMail({
       from: `Site Web <${fromAddr}>`,
       to,
@@ -51,4 +72,3 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
   }
 }
-

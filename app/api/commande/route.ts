@@ -42,8 +42,11 @@ export async function POST(req: NextRequest) {
       process.env.SMTP_PASS
     );
     if (!hasSMTP) {
-      console.warn("SMTP non configuré, build passe mais email désactivé");
-      return NextResponse.json({ success: true, mail: false });
+      console.warn("⚠️ SMTP non configuré → pas d'envoi d'email");
+      return new Response(
+        JSON.stringify({ ok: true, mail: false, error: "SMTP non configuré" }),
+        { status: 200 }
+      );
     }
 
     const to = process.env.COMMANDE_TO || process.env.SMTP_USER;
