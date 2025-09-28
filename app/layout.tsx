@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import AnnouncementBar from "../components/AnnouncementBar";
 import AnalyticsProvider from "../components/AnalyticsProvider";
+import ScrollSystem from "../components/ScrollSystem";
 
 export const metadata: Metadata = {
   title: "Fynora Résultats concrets",
@@ -23,6 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="fr">
       <head />
       <body className="bg-background text-foreground antialiased min-h-screen">
+        <ScrollSystem />
         <AnnouncementBar />
         <Navbar />
         <main className="min-h-[calc(100vh-200px)]">{children}</main>
