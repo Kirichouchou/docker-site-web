@@ -83,9 +83,9 @@ export default function HomePage() {
       <Hero />
       <Features />
 
-      <section className="section bg-[#F2F5FC]" aria-labelledby="services">
-        <div className="container mx-auto px-4">
-          <div className="relative overflow-hidden rounded-[48px] bg-gradient-to-br from-[#102B45] via-[#0A304E] to-[#051D33] shadow-[0_60px_120px_-45px_rgba(10,48,78,0.55)] text-white">
+      <section className="section pb-32 bg-[#F2F5FC]" aria-labelledby="services">
+        <div className="container relative mx-auto px-4 pb-16">
+          <div className="relative z-10 overflow-hidden rounded-[48px] bg-gradient-to-br from-[#102B45] via-[#0A304E] to-[#051D33] shadow-[0_60px_120px_-45px_rgba(10,48,78,0.55)] text-white">
             <div
               className="pointer-events-none absolute inset-0 opacity-60"
               style={{
@@ -133,6 +133,7 @@ export default function HomePage() {
             </div>
 >>>>>>> 991b4c6 (Ylan le negre)
           </div>
+          <div className="pointer-events-none absolute inset-x-6 -bottom-12 h-24 rounded-full bg-[#0A304E]/25 blur-3xl" />
         </div>
       </section>
 
@@ -145,3 +146,4 @@ export default function HomePage() {
     </>
   );
 }
+
