@@ -1,14 +1,26 @@
+<<<<<<< HEAD
 @tailwind base;
+=======
+﻿@tailwind base;
+>>>>>>> 991b4c6 (Ylan le negre)
 @tailwind components;
 @tailwind utilities;
 
 :root {
   /* Pale King's Blue background */
+<<<<<<< HEAD
   --background: 213 40% 95%;
   /* Dark neutral-blue foreground for contrast */
   --foreground: 210 15% 16%;
   /* Soft pale-blue surfaces */
   --muted: 213 30% 92%;
+=======
+  --background: 220 36% 95%;
+  /* Dark neutral-blue foreground for contrast */
+  --foreground: 210 15% 16%;
+  /* Soft pale-blue surfaces */
+  --muted: 220 26% 94%;
+>>>>>>> 991b4c6 (Ylan le negre)
   --card: 0 0% 100%;
   --border: 213 20% 82%;
 
@@ -30,3 +42,8 @@ body { line-height: 1.6; font-family: Pretendard, ui-sans-serif, system-ui, -app
 
 /* Section rhythm (40px = 2.5rem) */
 .section { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 991b4c6 (Ylan le negre)
