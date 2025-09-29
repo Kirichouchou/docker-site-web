@@ -1,21 +1,16 @@
-<<<<<<< HEAD
-export default function AnnouncementBar() {
-  return (
-    <div className="w-full bg-[hsl(var(--brand))] text-[hsl(var(--brand-foreground))] text-sm py-2" aria-live="polite">
-      <div className="container mx-auto px-4 text-center">
-        Offre limitée: <strong>4 places</strong> restantes ce mois-ci
-=======
 ﻿export default function AnnouncementBar() {
   return (
-    <div className="w-full bg-[#0A304E] text-white text-sm py-2" aria-live="polite">
-      <div className="container mx-auto px-4 text-center">
-        Offre limitÃ©e: <strong>4 places</strong> restantes ce mois-ci
->>>>>>> 991b4c6 (Ylan le negre)
+    <div
+      className="w-full bg-[#0c2f4b] text-sm text-white"
+      aria-live="polite"
+    >
+      <div className="mx-auto flex h-10 max-w-5xl items-center justify-center gap-2 px-4 text-center">
+        <span className="font-medium text-white/80">Offre limitée :</span>
+        <span className="rounded-full bg-white/10 px-3 py-1 font-semibold tracking-wide text-white">
+          4 places
+        </span>
+        <span className="font-medium text-white/80">restantes ce mois-ci</span>
       </div>
     </div>
   );
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> 991b4c6 (Ylan le negre)

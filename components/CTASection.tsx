@@ -30,9 +30,6 @@ export default function CTASection() {
                 className="group inline-flex items-center gap-3 rounded-full border border-white/20 bg-white/10 px-6 py-3 text-white transition hover:bg-white/15 hover:shadow-[0_18px_40px_-26px_rgba(0,0,0,0.45)]"
               >
                 <span className="flex flex-col text-left">
-                  <span className="text-xs uppercase tracking-[0.18em] text-white/70">
-                    Je veux développer mon business
-                  </span>
                   <span className="text-sm font-semibold">Réserver un appel</span>
                 </span>
                 <span className="ml-2 text-lg text-white/70 transition group-hover:translate-x-1">
