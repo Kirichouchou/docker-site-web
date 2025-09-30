@@ -1,18 +1,19 @@
 ﻿"use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState, type MouseEvent as ReactMouseEvent } from "react";
 import { ArrowUpRight } from "lucide-react";
 
 const navItems = [
   { href: "/", label: "Accueil" },
-  { href: "/offres", label: "Services" },
+  { href: "/#services", label: "Services" },
   { href: "/contact", label: "Contact" },
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -21,6 +22,29 @@ export default function Navbar() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  const scrollToServices = () => {
+    if (typeof window === "undefined") return;
+    const target = document.getElementById("services");
+    if (!target) return;
+    const rect = target.getBoundingClientRect();
+    const targetCenter = rect.top + window.scrollY + rect.height / 2;
+    const viewportCenter = window.innerHeight / 2;
+    const top = targetCenter - viewportCenter;
+    window.scrollTo({ top: Math.max(top, 0), behavior: "smooth" });
+  };
+
+  const handleServicesClick = async (
+    event: ReactMouseEvent<HTMLAnchorElement>
+  ) => {
+    event.preventDefault();
+    if (pathname !== "/") {
+      await router.push("/#services", { scroll: false });
+      setTimeout(scrollToServices, 120);
+    } else {
+      scrollToServices();
+    }
+  };
 
   const shellClasses = scrolled ? "py-3 px-6" : "py-6 px-12";
 
@@ -40,10 +64,12 @@ export default function Navbar() {
         <div className="flex flex-1 basis-0 items-center gap-10 text-sm font-medium text-white/70">
           {navItems.map((item) => {
             const active = pathname === item.href;
+            const isServices = item.label === "Services";
             return (
               <Link
                 key={item.href}
                 href={item.href}
+                onClick={isServices ? handleServicesClick : undefined}
                 className={`relative inline-flex items-center whitespace-nowrap transition ${
                   active ? "text-white" : "hover:text-white"
                 }`}
@@ -64,7 +90,7 @@ export default function Navbar() {
         <div className="hidden flex-1 basis-0 justify-center md:flex">
           <Link
             href="/"
-            className="text-sm font-semibold uppercase tracking-[0.5em] text-white/90"
+            className="text-2xl font-black leading-tight text-white font-sans"
             aria-label="Fynora"
           >
             Fynora
@@ -77,7 +103,7 @@ export default function Navbar() {
             className="inline-flex items-center gap-2 rounded-full bg-white/15 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-white/25"
             data-cta="nav_primary"
           >
-            Réserver un appel
+            R�server un appel
             <ArrowUpRight className="h-4 w-4" />
           </Link>
         </div>
@@ -85,3 +111,5 @@ export default function Navbar() {
     </nav>
   );
 }
+
+

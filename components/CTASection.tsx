@@ -23,7 +23,7 @@ export default function CTASection() {
             Nous orchestrons la conception, le pilotage et l'optimisation afin que vous puissiez vous focaliser sur l'essentiel : votre cœur de métier.
           </p>
 
-          <div className="mt-10 flex justify-center">
+          <div className="mt-8 flex justify-center">
             <Reveal delay={200} className="inline-flex">
               <Link
                 href="/contact"
@@ -43,3 +43,4 @@ export default function CTASection() {
     </section>
   );
 }
+
