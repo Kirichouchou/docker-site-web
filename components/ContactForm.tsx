@@ -204,13 +204,13 @@ export default function ContactForm({ variant = "default" }: ContactFormProps) {
     ? "block text-xs font-semibold uppercase tracking-[0.22em] text-white/70"
     : "block text-sm font-semibold";
   const inputClass = isOverlay
-    ? "mt-2 w-full rounded-2xl border border-white/25 bg-[rgba(42,55,73,0.82)] px-4 py-2.5 text-sm text-white/90 placeholder:text-white/55 backdrop-blur focus:border-white/45 focus:outline-none focus:ring-2 focus:ring-white/35"
+    ? "mt-2 w-full rounded-2xl border border-white/35 bg-[rgba(255,255,255,0.18)] px-4 py-2.5 text-sm text-white/90 placeholder:text-white/55 backdrop-blur focus:border-white/60 focus:outline-none focus:ring-2 focus:ring-white/35"
     : "mt-1 w-full rounded-lg border border-border px-3 py-2 focus:border-black/40 focus:outline-none focus:ring-2 focus:ring-black/10";
   const buttonClass = isOverlay
-    ? "inline-flex items-center justify-center rounded-full border border-white/30 bg-[rgba(42,55,73,0.82)] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-white/28 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:opacity-60"
+    ? "inline-flex items-center justify-center rounded-full border border-white/45 bg-[linear-gradient(135deg,_rgba(255,255,255,0.32)_0%,_rgba(210,226,248,0.24)_100%)] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-white/32 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:opacity-60"
     : "inline-flex items-center rounded-lg px-6 py-3 min-h-12 bg-[hsl(var(--brand))] text-[hsl(var(--brand-foreground))] font-semibold disabled:opacity-60";
   const selectionBoxClass = isOverlay
-    ? "mb-4 rounded-2xl border border-white/20 bg-[rgba(35,47,66,0.78)] p-4 text-white/85 backdrop-blur"
+    ? "mb-4 rounded-2xl border border-white/30 bg-[linear-gradient(145deg,_rgba(132,150,182,0.42)_0%,_rgba(184,204,232,0.26)_100%)] p-4 text-white/85 backdrop-blur"
     : "mb-6 rounded-lg border border-border bg-white p-4";
   const selectionLabelClass = isOverlay ? "text-sm text-white/70" : "text-sm text-black/60";
   const toggleLabelClass = isOverlay
@@ -228,7 +228,7 @@ export default function ContactForm({ variant = "default" }: ContactFormProps) {
     ? "text-sm text-red-600"
     : "";
   const overlayShellClass =
-    "rounded-[32px] border border-white/25 bg-[rgba(26,39,56,0.88)] p-5 shadow-[0_28px_110px_-60px_rgba(7,17,29,0.55)] backdrop-blur-2xl sm:p-7";
+    "rounded-[32px] border border-white/30 bg-[linear-gradient(140deg,_rgba(112,128,156,0.54)_0%,_rgba(152,174,206,0.32)_100%)] p-5 shadow-[0_28px_110px_-60px_rgba(7,17,29,0.55)] backdrop-blur-2xl sm:p-7";
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

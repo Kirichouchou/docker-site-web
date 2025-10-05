@@ -199,7 +199,7 @@ function OverlayRoot({ onClose, children, copy }: OverlayRootProps) {
         <span className="hidden sm:inline">{copy.closeLabel}</span>
         <X className="h-4 w-4" aria-hidden="true" />
       </button>
-      <div className="relative z-[205] flex w-full max-w-[1280px] max-h-[92vh] flex-col overflow-hidden rounded-[36px] border border-white/25 bg-[rgba(15,31,53,0.94)] text-white/90 shadow-[0_55px_170px_-60px_rgba(7,17,29,0.65)] backdrop-blur-[42px] sm:max-h-[88vh]">
+      <div className="relative z-[205] flex w-full max-w-[1280px] max-h-[92vh] flex-col overflow-hidden rounded-[36px] border border-white/25 bg-[linear-gradient(135deg,_rgba(42,56,76,0.85)_0%,_rgba(96,118,150,0.72)_100%)] text-white/90 shadow-[0_55px_170px_-60px_rgba(7,17,29,0.65)] backdrop-blur-[42px] sm:max-h-[88vh]">
         {children}
       </div>
     </div>
@@ -222,14 +222,14 @@ function ContactOverlayContent({
   return (
     <div className="grid flex-1 overflow-y-auto gap-4 p-4 sm:p-5 lg:p-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
       <div className="flex flex-col gap-5 sm:gap-6">
-        <section className="rounded-[32px] border border-white/25 bg-[rgba(26,39,56,0.9)] p-5 text-white shadow-[0_32px_100px_-48px_rgba(0,0,0,0.55)] backdrop-blur-2xl sm:p-6 lg:p-7">
+        <section className="rounded-[32px] border border-white/30 bg-[linear-gradient(150deg,_rgba(130,148,178,0.4)_0%,_rgba(182,202,230,0.25)_100%)] p-5 text-white shadow-[0_32px_100px_-48px_rgba(0,0,0,0.55)] backdrop-blur-2xl sm:p-6 lg:p-7">
           <p className="text-xs font-semibold uppercase tracking-[0.32em] text-white/70">{contact.eyebrow}</p>
           <h2 className="mt-4 text-[2.2rem] font-extrabold leading-tight text-white sm:text-[2.4rem] lg:text-3xl">
             {contact.title}
           </h2>
           <p className="mt-3 text-sm text-white/75">{contact.description}</p>
           {bookingSummary && (
-            <div className="mt-3 rounded-2xl border border-white/30 bg-white/10 p-3 text-sm text-white/85 shadow-[0_24px_80px_-50px_rgba(0,0,0,0.55)]">
+            <div className="mt-3 rounded-2xl border border-white/30 bg-[rgba(255,255,255,0.16)] p-3 text-sm text-white/85 shadow-[0_24px_80px_-50px_rgba(0,0,0,0.55)]">
               <p className="font-semibold text-white">{contact.summaryTitle}</p>
               <p className="mt-1 text-white/80">{bookingSummary}</p>
               <p className="mt-2 text-xs text-white/60">{contact.summaryHint}</p>
@@ -237,7 +237,7 @@ function ContactOverlayContent({
           )}
         </section>
 
-        <section className="flex flex-1 flex-col gap-4 sm:gap-5 rounded-[36px] border border-white/25 bg-[rgba(26,39,56,0.9)] p-4 text-white shadow-[0_40px_130px_-60px_rgba(0,0,0,0.6)] backdrop-blur-2xl sm:p-6 lg:p-8">
+        <section className="flex flex-1 flex-col gap-4 sm:gap-5 rounded-[36px] border border-white/25 bg-[linear-gradient(150deg,_rgba(120,138,168,0.45)_0%,_rgba(170,192,220,0.28)_100%)] p-4 text-white shadow-[0_40px_130px_-60px_rgba(0,0,0,0.6)] backdrop-blur-2xl sm:p-6 lg:p-8">
           <div className="flex items-start gap-4 text-white">
             <Video className="h-5 w-5 text-white/70" aria-hidden="true" />
             <div className="space-y-2">
@@ -249,7 +249,7 @@ function ContactOverlayContent({
             <button
               type="button"
               onClick={onShowBooking}
-              className="inline-flex w-full items-center justify-center rounded-full border border-white/30 bg-white/20 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:text-base"
+              className="inline-flex w-full items-center justify-center rounded-full border border-white/30 bg-[linear-gradient(130deg,_rgba(255,255,255,0.35)_0%,_rgba(214,226,240,0.24)_100%)] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:text-base"
             >
               {contact.bookingButton}
             </button>
@@ -258,7 +258,7 @@ function ContactOverlayContent({
         </section>
       </div>
 
-      <section className="rounded-[32px] border border-white/25 bg-[rgba(29,45,64,0.9)] p-4 text-white shadow-[0_36px_120px_-60px_rgba(0,0,0,0.6)] backdrop-blur-2xl sm:p-5 lg:p-6">
+      <section className="rounded-[32px] border border-white/30 bg-[linear-gradient(150deg,_rgba(140,158,190,0.38)_0%,_rgba(192,212,238,0.24)_100%)] p-4 text-white shadow-[0_36px_120px_-60px_rgba(0,0,0,0.6)] backdrop-blur-2xl sm:p-5 lg:p-6">
         <div className="flex items-center gap-3 text-white">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15">
             <MessageCircle className="h-5 w-5" aria-hidden="true" />
@@ -343,7 +343,7 @@ function BookingOverlayContent({
 
   return (
     <div className="grid flex-1 overflow-y-auto gap-4 p-4 sm:p-5 lg:p-7 lg:grid-cols-[minmax(0,0.88fr)_minmax(0,1.38fr)] lg:gap-8">
-      <aside className="flex flex-col gap-6 rounded-[32px] border border-white/25 bg-[rgba(26,39,56,0.9)] p-4 text-white shadow-[0_32px_110px_-60px_rgba(0,0,0,0.6)] backdrop-blur-2xl sm:p-5 lg:p-6">
+      <aside className="flex flex-col gap-6 rounded-[32px] border border-white/30 bg-[linear-gradient(150deg,_rgba(130,148,178,0.4)_0%,_rgba(182,202,230,0.25)_100%)] p-4 text-white shadow-[0_32px_110px_-60px_rgba(0,0,0,0.6)] backdrop-blur-2xl sm:p-5 lg:p-6">
         <div className="space-y-2.5">
           <p className="text-xs font-semibold uppercase tracking-[0.28em] text-white/70">{booking.eyebrow}</p>
           <h2 className="text-2xl font-bold text-white sm:text-[2.2rem] lg:text-3xl">{booking.title}</h2>
@@ -353,7 +353,7 @@ function BookingOverlayContent({
           <button
             type="button"
             onClick={onBack}
-            className="inline-flex flex-1 items-center justify-center rounded-full border border-white/25 bg-white/15 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            className="inline-flex flex-1 items-center justify-center rounded-full border border-white/25 bg-[rgba(255,255,255,0.18)] px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
           >
             {booking.back}
           </button>
@@ -361,21 +361,21 @@ function BookingOverlayContent({
             type="button"
             onClick={handleConfirm}
             disabled={!formattedSelection}
-            className="inline-flex flex-1 items-center justify-center rounded-full border border-white/30 bg-white/20 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-white/10 disabled:text-white/50"
+            className="inline-flex flex-1 items-center justify-center rounded-full border border-white/40 bg-[linear-gradient(130deg,_rgba(255,255,255,0.34)_0%,_rgba(214,228,244,0.26)_100%)] px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-[rgba(255,255,255,0.16)] disabled:text-white/50"
           >
             {booking.confirm}
           </button>
         </div>
       </aside>
 
-      <section className="rounded-[32px] border border-white/25 bg-[rgba(26,39,56,0.9)] p-4 text-white shadow-[0_34px_120px_-60px_rgba(0,0,0,0.6)] backdrop-blur-2xl sm:p-5 lg:p-6">
+      <section className="rounded-[32px] border border-white/30 bg-[linear-gradient(150deg,_rgba(130,148,178,0.4)_0%,_rgba(182,202,230,0.25)_100%)] p-4 text-white shadow-[0_34px_120px_-60px_rgba(0,0,0,0.6)] backdrop-blur-2xl sm:p-5 lg:p-6">
         <div className="flex flex-col gap-6 lg:flex-row">
           <div className="flex-1 space-y-4">
             <header className="flex items-center justify-between text-white">
               <button
                 type="button"
                 onClick={() => setViewDate((prev) => offsetMonth(prev, -1))}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/25 bg-white/15 text-white transition hover:bg-white/25"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/25 bg-[rgba(255,255,255,0.18)] text-white transition hover:bg-white/28"
                 aria-label={booking.monthPrevious}
               >
                 <ChevronLeft className="h-4 w-4" aria-hidden="true" />
@@ -384,7 +384,7 @@ function BookingOverlayContent({
               <button
                 type="button"
                 onClick={() => setViewDate((prev) => offsetMonth(prev, 1))}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/25 bg-white/15 text-white transition hover:bg-white/25"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/25 bg-[rgba(255,255,255,0.18)] text-white transition hover:bg-white/28"
                 aria-label={booking.monthNext}
               >
                 <ChevronRight className="h-4 w-4" aria-hidden="true" />
