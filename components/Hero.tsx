@@ -1,19 +1,25 @@
 ﻿"use client";
 
 import React from "react";
+import { ArrowUpRight } from "lucide-react";
 import Reveal from "./Reveal";
 import { useContactOverlay } from "./ContactOverlayProvider";
+import { useLanguage } from "../contexts/LanguageContext";
 
 export default function Hero() {
-  const titleLineOne = "Un site internet n'est pas";
-  const titleLineTwo = "qu'une vitrine";
+  const { dictionary } = useLanguage();
+  const heroCopy = dictionary?.hero ?? {};
+  const titleLineOne = heroCopy.titleLineOne ?? "Un site internet n'est pas";
+  const titleLineTwo = heroCopy.titleLineTwo ?? "qu'une vitrine";
   const description =
-    "C'est un outil pour seduire vos visiteurs, inspirer confiance et transformer l'interet en action. Chaque site est concu pour devenir un veritable levier de croissance.";
-  const ctaLabel = "Reserver un appel";
-  const ctaIcon = ">";
+    heroCopy.description ??
+    "C'est un outil pour séduire vos visiteurs, inspirer confiance et transformer l'intérêt en action. Chaque site est conçu pour devenir un véritable levier de croissance.";
+  const ctaLabel = heroCopy.cta ?? "Réserver un appel";
+  const mediaPlaceholderLabel = heroCopy.mediaPlaceholderLabel ?? "Espace média";
+  const mediaPlaceholderNote =
+    heroCopy.mediaPlaceholderNote ?? "Ajoutez une vidéo ou un carrousel d'images ici.";
+
   const { open } = useContactOverlay();
-  const mediaPlaceholderLabel = "Espace media";
-  const mediaPlaceholderNote = "Ajoutez une video ou un carrousel d'images ici.";
 
   return (
     <section className="min-h-screen flex flex-col items-center justify-start px-4 pt-[72px] pb-24 bg-[#F2F5FC]">
@@ -40,7 +46,7 @@ export default function Hero() {
             className="inline-flex items-center gap-3 px-8 py-3 transform rounded-full bg-[#0A304E] hover:bg-[#0C3D66] text-white font-semibold text-sm sm:text-base shadow-[0_18px_40px_-20px_rgba(0,0,0,0.45)] border border-[#0A304E] hover:translate-y-[-2px] transition-transform focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
           >
             {ctaLabel}
-            <span aria-hidden="true">{ctaIcon}</span>
+            <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
           </button>
         </Reveal>
         <Reveal delay={360} className="flex justify-center">

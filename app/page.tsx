@@ -1,29 +1,57 @@
-﻿import Hero from "../components/Hero";
+﻿"use client";
+
+import Hero from "../components/Hero";
 import Features from "../components/Features";
 import CTASection from "../components/CTASection";
 import Reveal from "../components/Reveal";
+import { useLanguage } from "../contexts/LanguageContext";
 
-const servicesHighlight = {
-  title: "Piloter votre croissance",
-  subtitle:
-    "Chaque projet est suivi avec précision : stratégie, suivi et optimisation continue pour faire progresser vos résultats semaine après semaine.",
-  pillars: [
-    {
-      title: "Tracking",
-      description:
-        "Mettre en place les bons indicateurs pour mesurer précisément l'impact de vos actions et prendre les bonnes décisions.",
-      stack: ["Google Tag Manager", "GA4"],
-    },
-    {
-      title: "Optimisation & reporting",
-      description:
-        "Des tableaux de bord clairs et actionnables pour piloter votre acquisition et identifier les prochaines priorités.",
-      stack: ["Looker Studio", "Notion"],
-    },
-  ],
+type Pillar = {
+  title: string;
+  description: string;
+  stack: string[];
 };
 
+type ServicesHighlight = {
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+  pillars: Pillar[];
+};
+
+function resolveServicesHighlight(dictionary: ReturnType<typeof useLanguage>["dictionary"]): ServicesHighlight {
+  const data = dictionary?.homepage?.servicesHighlight ?? {};
+  const fallbackPillars: Pillar[] = [
+    {
+      title: "Design & Expérience",
+      description:
+        "Conception de sites élégants et performants, pensés pour offrir une expérience fluide et convertir vos visiteurs en clients.",
+      stack: ["Design responsive"],
+    },
+    {
+      title: "Analyse & Performance",
+      description:
+        "Des tableaux de bord clairs et actionnables pour piloter votre acquisition et identifier les prochaines priorités.",
+      stack: ["GA4", "Looker Studio", "Tag Manager"],
+    },
+  ];
+
+  const pillars = Array.isArray(data.pillars) && data.pillars.length > 0 ? data.pillars : fallbackPillars;
+
+  return {
+    eyebrow: data.eyebrow ?? "Nos services",
+    title: data.title ?? "Des sites pensés pour la conversion",
+    subtitle:
+      data.subtitle ??
+      "Nous concevons des landing pages et sites sur mesure conçus pour maximiser vos ventes et votre visibilité en ligne.",
+    pillars: pillars as Pillar[],
+  };
+}
+
 export default function HomePage() {
+  const { dictionary } = useLanguage();
+  const servicesHighlight = resolveServicesHighlight(dictionary);
+
   return (
     <>
       <Hero />
@@ -43,7 +71,7 @@ export default function HomePage() {
             <div className="relative grid gap-10 px-6 py-12 sm:px-10 md:px-12 lg:grid-cols-[minmax(0,0.55fr)_minmax(0,1fr)] lg:gap-12 lg:px-16 lg:py-16">
               <Reveal as="header" className="max-w-xl space-y-4">
                 <p className="text-sm font-semibold uppercase tracking-[0.32em] text-white/70">
-                  Nos services
+                  {servicesHighlight.eyebrow}
                 </p>
                 <h2 id="services" className="text-3xl md:text-4xl font-extrabold leading-snug">
                   {servicesHighlight.title}
@@ -57,7 +85,7 @@ export default function HomePage() {
                 {servicesHighlight.pillars.map((pillar, index) => (
                   <Reveal
                     as="article"
-                    key={pillar.title}
+                    key={`${pillar.title}-${index}`}
                     delay={index * 120}
                     className="group relative overflow-hidden rounded-[32px] border border-white/15 bg-white/10 px-6 py-7 sm:px-8 sm:py-9 backdrop-blur-xl shadow-[0_40px_90px_-50px_rgba(0,0,0,0.55)] transition-transform hover:-translate-y-1"
                   >
@@ -80,11 +108,14 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-          <div className="pointer-events-none absolute inset-x-6 -bottom-12 h-24 rounded-full bg-[#0A304E]/25 blur-3xl" />
+          <div className="relative mt-14">
+            <CTASection embedded />
+          </div>
         </div>
       </section>
-
-      <CTASection />
     </>
   );
 }
+
+
+
