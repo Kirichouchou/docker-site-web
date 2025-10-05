@@ -9,7 +9,7 @@ import LanguageSwitcher from "../components/LanguageSwitcher";
 import { LanguageProvider } from "../contexts/LanguageContext";
 
 export const metadata: Metadata = {
-  title: "Mini-boutique",
+  title: "Fynora",
   description: "Votre description ici",
 };
 
@@ -34,5 +34,6 @@ export default function RootLayout({
     </html>
   );
 }
+
 
 
