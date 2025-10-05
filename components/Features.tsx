@@ -14,7 +14,7 @@ export default function Features() {
           {heading}
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 justify-items-center">
-          {items.map((label, index) => (
+          {items.map((label: string, index: number) => (
             <Reveal key={label} delay={index * 120} className="w-full max-w-xs">
               <div className="inline-flex w-full items-center justify-center rounded-full px-8 py-3 bg-[#0A304E] hover:bg-[#0C3D66] text-white font-semibold text-sm sm:text-base border border-[#0A304E] shadow-[0_18px_40px_-20px_rgba(0,0,0,0.45)] transition-colors">
                 <span>{label}</span>
@@ -26,4 +26,6 @@ export default function Features() {
     </section>
   );
 }
+
+
 
