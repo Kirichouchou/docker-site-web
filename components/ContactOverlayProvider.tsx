@@ -188,7 +188,7 @@ type OverlayRootProps = {
 
 function OverlayRoot({ onClose, children, copy }: OverlayRootProps) {
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-[rgba(8,15,26,0.76)] px-4 py-10 backdrop-blur-xl">
+    <div className="overlay-backdrop fixed inset-0 z-[200] flex items-center justify-center bg-[rgba(8,15,26,0.76)] px-4 py-10 backdrop-blur-xl">
       <button type="button" className="fixed inset-0 h-full w-full cursor-auto" onClick={onClose} aria-hidden="true" />
       <button
         type="button"
@@ -199,7 +199,7 @@ function OverlayRoot({ onClose, children, copy }: OverlayRootProps) {
         <span className="hidden sm:inline">{copy.closeLabel}</span>
         <X className="h-4 w-4" aria-hidden="true" />
       </button>
-      <div className="relative z-[205] flex w-full max-w-[1280px] max-h-[92vh] flex-col overflow-hidden rounded-[36px] border border-white/25 bg-[linear-gradient(135deg,_rgba(42,56,76,0.85)_0%,_rgba(96,118,150,0.72)_100%)] text-white/90 shadow-[0_55px_170px_-60px_rgba(7,17,29,0.65)] backdrop-blur-[42px] sm:max-h-[88vh]">
+      <div className="overlay-shell relative z-[205] flex w-full max-w-[1280px] max-h-[92vh] flex-col overflow-hidden rounded-[36px] border border-white/25 bg-[linear-gradient(135deg,_rgba(42,56,76,0.85)_0%,_rgba(96,118,150,0.72)_100%)] text-white/90 shadow-[0_55px_170px_-60px_rgba(7,17,29,0.65)] backdrop-blur-[42px] sm:max-h-[88vh]">
         {children}
       </div>
     </div>
