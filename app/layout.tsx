@@ -4,7 +4,9 @@ import "../styles/reveal.css";
 
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import AnnouncementBar from "../components/AnnouncementBar";
+import ContactOverlayProvider from "../components/ContactOverlayProvider";
+import LanguageSwitcher from "../components/LanguageSwitcher";
+import { LanguageProvider } from "../contexts/LanguageContext";
 
 export const metadata: Metadata = {
   title: "Mini-boutique",
@@ -20,11 +22,17 @@ export default function RootLayout({
     <html lang="fr">
       <head />
       <body className="bg-[#F2F5FC]">
-        <AnnouncementBar />
-        <Navbar />
-        <main>{children}</main>
-        <Footer />
+        <LanguageProvider>
+          <LanguageSwitcher />
+          <ContactOverlayProvider>
+            <Navbar />
+            <main>{children}</main>
+            <Footer />
+          </ContactOverlayProvider>
+        </LanguageProvider>
       </body>
     </html>
   );
 }
+
+
