@@ -35,8 +35,6 @@ export const TRANSLATIONS: Record<Language, any> = {
       description:
         "C'est un outil pour séduire vos visiteurs, inspirer confiance et transformer l'intérêt en action. Chaque site est conçu pour devenir un véritable levier de croissance.",
       cta: "Réserver un appel",
-      mediaPlaceholderLabel: "Espace média",
-      mediaPlaceholderNote: "Ajoutez une vidéo ou un carrousel d'images ici."
     },
     features: {
       heading: "Atouts principaux",
@@ -211,8 +209,6 @@ export const TRANSLATIONS: Record<Language, any> = {
       description:
         "It's a tool to captivate your visitors, inspire trust, and turn interest into action. Every site is crafted to become a true growth engine.",
       cta: "Book a call",
-      mediaPlaceholderLabel: "Media space",
-      mediaPlaceholderNote: "Add a video or an image carousel here."
     },
     features: {
       heading: "Key advantages",
@@ -451,8 +447,6 @@ links: {
       description:
         "Es una herramienta para seducir a tus visitantes, inspirar confianza y transformar el interés en acción. Cada sitio está diseñado para convertirse en un verdadero motor de crecimiento.",
       cta: "Reservar una llamada",
-      mediaPlaceholderLabel: "Espacio multimedia",
-      mediaPlaceholderNote: "Añade aquí un vídeo o un carrusel de imágenes."
     },
     features: {
       heading: "Ventajas clave",

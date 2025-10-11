@@ -2,9 +2,9 @@
 
 import Hero from "../components/Hero";
 import Features from "../components/Features";
-import CTASection from "../components/CTASection";
 import Reveal from "../components/Reveal";
 import { useLanguage } from "../contexts/LanguageContext";
+import ShowcaseSection from "../components/ShowcaseSection";
 
 type Pillar = {
   title: string;
@@ -55,6 +55,7 @@ export default function HomePage() {
   return (
     <>
       <Hero />
+      <ShowcaseSection />
       <Features />
 
       <section className="section pb-32 bg-[#F2F5FC]" aria-labelledby="services">
@@ -107,9 +108,6 @@ export default function HomePage() {
                 ))}
               </div>
             </div>
-          </div>
-          <div className="relative mt-14">
-            <CTASection embedded />
           </div>
         </div>
       </section>

@@ -49,8 +49,8 @@ export default function ServicesBridge() {
             </div>
           </div>
 
-          <div className="pointer-events-none absolute -left-20 top-1/4 h-56 w-56 rounded-full bg-white/10 blur-3xl" aria-hidden="true" />
-          <div className="pointer-events-none absolute -right-16 bottom-8 h-44 w-44 rounded-full bg-[#0EA5E9]/20 blur-3xl" aria-hidden="true" />
+          <div className="pointer-events-none absolute -left-5 top-1/4 h-56 w-56 rounded-full bg-white/10 blur-3xl" aria-hidden="true" />
+          <div className="pointer-events-none absolute -right-4 bottom-8 h-44 w-44 rounded-full bg-[#0EA5E9]/20 blur-3xl" aria-hidden="true" />
         </Reveal>
       </div>
     </section>
