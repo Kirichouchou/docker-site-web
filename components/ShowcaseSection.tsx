@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { ArrowUpRight, ChevronDown, ChevronUp } from "lucide-react";
 import Reveal from "./Reveal";
 import { useLanguage } from "../contexts/LanguageContext";
@@ -67,16 +67,6 @@ const ACTIVE_CARD_SCALE_X = 1.08;
 const ACTIVE_CARD_SCALE_Y = 1.25;
 const OVERLAY_HORIZONTAL_SHIFT_PERCENT = 0;
 const INACTIVE_CARD_X_OFFSET_PERCENT = ((ACTIVE_CARD_SCALE_X - 1) / 2) * 100;
-
-function renderWordSpans(text?: string) {
-  if (!text) return null;
-  const segments = text.match(/\S+\s*/g) ?? [];
-  return segments.map((segment, index) => (
-    <span key={`word-${index}`} className="word">
-      {segment}
-    </span>
-  ));
-}
 
 export default function ShowcaseSection() {
   const { dictionary } = useLanguage();
@@ -188,13 +178,9 @@ export default function ShowcaseSection() {
   const safeIndex = projectCount > 0 ? Math.min(activeIndex, projectCount - 1) : 0;
   const activeProject = projects[safeIndex] ?? projects[0];
   const [displayedProject, setDisplayedProject] = useState<ShowcaseProject | null>(activeProject ?? null);
-  const initialDetailsRenderRef = useRef(true);
-  const pendingDetailsEnterRef = useRef(false);
-  const titleRef = useRef<HTMLHeadingElement | null>(null);
-  const subtitleRef = useRef<HTMLParagraphElement | null>(null);
-  const descriptionRef = useRef<HTMLParagraphElement | null>(null);
-  const ctaRef = useRef<HTMLAnchorElement | null>(null);
-  const tagsRef = useRef<HTMLDivElement | null>(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [showPlaceholder, setShowPlaceholder] = useState(false);
+  const detailCardRef = useRef<HTMLDivElement | null>(null);
   const activeSlideRef = useRef<HTMLDivElement | null>(null);
   const cardContentRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const previousActiveCardIdRef = useRef<string | null>(projects[safeIndex]?.id ?? null);
@@ -212,22 +198,14 @@ export default function ShowcaseSection() {
   const layoutClasses = isCarouselInteractive
     ? "flex flex-col gap-12 lg:grid lg:grid-cols-[minmax(0,1.2fr)_auto_minmax(0,1fr)] lg:items-stretch lg:gap-12"
     : "flex flex-col gap-12 lg:grid lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-stretch lg:gap-12";
-  const collectWordElements = useCallback(() => {
-    const containers = [
-      titleRef.current,
-      subtitleRef.current,
-      descriptionRef.current,
-      ctaRef.current,
-      tagsRef.current,
-    ];
-    const words: HTMLElement[] = [];
-    containers.forEach((container) => {
-      if (!container) return;
-      words.push(...Array.from(container.querySelectorAll<HTMLElement>(".word")));
-    });
-    return words;
-  }, []);
-
+  const detailProject = displayedProject ?? activeProject;
+  const detailDescriptionLines = useMemo(() => {
+    if (!detailProject?.description) return [];
+    const trimmed = detailProject.description.trim();
+    if (!trimmed) return [];
+    const segments = trimmed.split(/(?<=[\.!?])\s+(?=[\p{Lu}0-9])/u);
+    return segments.length ? segments : [trimmed];
+  }, [detailProject?.description]);
   useEffect(() => {
     if (projectCount > 0 && activeIndex >= projectCount) {
       setActiveIndex(0);
@@ -329,102 +307,168 @@ export default function ShowcaseSection() {
       return;
     }
 
-    if (initialDetailsRenderRef.current) {
-      initialDetailsRenderRef.current = false;
-      if (displayedProject.id !== activeProject.id) {
-        setDisplayedProject(activeProject);
-      }
-      return;
-    }
-
     if (activeProject.id === displayedProject.id) return;
 
     const reduceMotion =
       typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     if (reduceMotion) {
-      pendingDetailsEnterRef.current = false;
       setDisplayedProject(activeProject);
+      setShowPlaceholder(false);
+      setIsTransitioning(false);
       return;
     }
 
-    const wordEls = collectWordElements();
-    if (wordEls.length === 0) {
+    const card = detailCardRef.current;
+    if (!card) {
       setDisplayedProject(activeProject);
+      setShowPlaceholder(false);
+      setIsTransitioning(false);
       return;
     }
 
-    const animations = wordEls.map((span, idx) =>
-      span.animate(
-        [
-          { opacity: 1, transform: "translateY(0)", filter: "blur(0px)" },
-          { opacity: 0, transform: "translateY(-14px)", filter: "blur(2px)" },
-        ],
-        {
-          duration: 280,
-          easing: "cubic-bezier(.22,.61,.36,1)",
-          delay: idx * 10,
-          fill: "forwards",
-        },
-      )
-    );
+    setIsTransitioning(true);
 
-    const animationPromises = animations.map((animation) => animation.finished);
+    const itemEls = Array.from(card.querySelectorAll<HTMLElement>("[data-animate-item]"));
+    const lineEls = Array.from(card.querySelectorAll<HTMLElement>("[data-animate-line]"));
+    const exitAnimations: Animation[] = [];
 
-    Promise.all(animationPromises).then(() => {
-      pendingDetailsEnterRef.current = true;
+    itemEls.forEach((el, idx) => {
+      exitAnimations.push(
+        el.animate(
+          [
+            { opacity: 1, transform: "translateY(0)", filter: "blur(0px)" },
+            { opacity: 0, transform: "translateY(-18px)", filter: "blur(3px)" },
+          ],
+          {
+            duration: 260,
+            easing: "cubic-bezier(.22,.61,.36,1)",
+            delay: idx * 45,
+            fill: "forwards",
+          },
+        ),
+      );
+    });
+
+    lineEls.forEach((el, idx) => {
+      exitAnimations.push(
+        el.animate(
+          [
+            { opacity: 1, transform: "translateY(0)", filter: "blur(0px)" },
+            { opacity: 0, transform: "translateY(-14px)", filter: "blur(3px)" },
+          ],
+          {
+            duration: 240,
+            easing: "cubic-bezier(.22,.61,.36,1)",
+            delay: idx * 30,
+            fill: "forwards",
+          },
+        ),
+      );
+    });
+
+    let cancelled = false;
+
+    Promise.allSettled(exitAnimations.map((animation) => animation.finished)).then(() => {
+      if (cancelled) return;
+      exitAnimations.forEach((animation) => animation.cancel());
+      setShowPlaceholder(true);
       setDisplayedProject(activeProject);
     });
 
     return () => {
-      animations.forEach((animation) => animation.cancel());
+      cancelled = true;
+      exitAnimations.forEach((animation) => animation.cancel());
     };
-  }, [activeProject, collectWordElements, displayedProject]);
+  }, [activeProject, displayedProject]);
 
   useEffect(() => {
     if (!displayedProject) return;
-    if (!pendingDetailsEnterRef.current) return;
+    if (!isTransitioning) return;
 
     const reduceMotion =
       typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     if (reduceMotion) {
-      pendingDetailsEnterRef.current = false;
+      setIsTransitioning(false);
+      setShowPlaceholder(false);
       return;
     }
 
-    let animations: Animation[] = [];
-    const rafId = requestAnimationFrame(() => {
-      const wordEls = collectWordElements();
-      animations = wordEls.map((span, idx) =>
-        span.animate(
-          [
-            { opacity: 0, transform: "translateY(16px)", filter: "blur(2px)" },
-            { opacity: 1, transform: "translateY(0)", filter: "blur(0px)" },
-          ],
-          {
-            duration: 360,
-            easing: "cubic-bezier(.22,.61,.36,1)",
-            delay: idx * 12,
-            fill: "forwards",
-          },
-        )
-      );
+    const card = detailCardRef.current;
+    if (!card) {
+      setIsTransitioning(false);
+      setShowPlaceholder(false);
+      return;
+    }
 
-      const animationPromises = animations.map((animation) => animation.finished);
-      Promise.all(animationPromises).finally(() => {
-        pendingDetailsEnterRef.current = false;
+    let cancelled = false;
+    let entryAnimations: Animation[] = [];
+
+    const startEntry = () => {
+      if (cancelled) return;
+
+      const itemEls = Array.from(card.querySelectorAll<HTMLElement>("[data-animate-item]"));
+      const lineEls = Array.from(card.querySelectorAll<HTMLElement>("[data-animate-line]"));
+
+      entryAnimations = [];
+
+      itemEls.forEach((el, idx) => {
+        entryAnimations.push(
+          el.animate(
+            [
+              { opacity: 0, transform: "translateY(18px)", filter: "blur(6px)" },
+              { opacity: 1, transform: "translateY(0)", filter: "blur(0px)" },
+            ],
+            {
+              duration: 420,
+              easing: "cubic-bezier(.22,.61,.36,1)",
+              delay: 120 + idx * 70,
+              fill: "forwards",
+            },
+          ),
+        );
       });
-    });
+
+      lineEls.forEach((el, idx) => {
+        entryAnimations.push(
+          el.animate(
+            [
+              { opacity: 0, transform: "translateY(22px)", filter: "blur(6px)" },
+              { opacity: 1, transform: "translateY(0)", filter: "blur(0px)" },
+            ],
+            {
+              duration: 400,
+              easing: "cubic-bezier(.22,.61,.36,1)",
+              delay: 160 + idx * 90,
+              fill: "forwards",
+            },
+          ),
+        );
+      });
+
+      setTimeout(() => {
+        if (!cancelled) {
+          setShowPlaceholder(false);
+        }
+      }, 150);
+
+      Promise.allSettled(entryAnimations.map((animation) => animation.finished)).then(() => {
+        if (cancelled) return;
+        entryAnimations.forEach((animation) => animation.cancel());
+        setIsTransitioning(false);
+        setShowPlaceholder(false);
+      });
+    };
+
+    const raf = requestAnimationFrame(startEntry);
 
     return () => {
-      cancelAnimationFrame(rafId);
-      animations.forEach((animation) => animation.cancel());
-      pendingDetailsEnterRef.current = false;
+      cancelled = true;
+      cancelAnimationFrame(raf);
+      entryAnimations.forEach((animation) => animation.cancel());
     };
-  }, [collectWordElements, displayedProject]);
-
-  const detailProject = displayedProject ?? activeProject;
+  }, [displayedProject, isTransitioning]);
 
   return (
     <section className="bg-[#F2F5FC] px-4 pt-8 pb-10 sm:pt-12 sm:pb-12">
@@ -631,56 +675,80 @@ export default function ShowcaseSection() {
             )}
 
             {detailProject && (
-              <div className="flex flex-col gap-6 lg:pt-2">
-                <div className="flex items-start gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0A304E]/10 text-[#0A304E]">
-                    <span className="text-lg font-black" aria-hidden="true" />
-                  </div>
-                  <div className="space-y-1">
-                    <h3 ref={titleRef} className="text-2xl font-semibold text-[#111111]">
-                      {renderWordSpans(detailProject.name)}
-                    </h3>
-                    <p ref={subtitleRef} className="text-sm font-medium text-[#0A304E]/80">
-                      {renderWordSpans(detailProject.subtitle)}
-                    </p>
-                  </div>
-                </div>
-                <p ref={descriptionRef} className="text-sm leading-relaxed text-[#374151]">
-                  {renderWordSpans(detailProject.description)}
-                </p>
-                {detailProject.cta && (
-                  <a
-                    ref={ctaRef}
-                    href={detailProject.cta.href}
-                    className="inline-flex items-center gap-2 self-start text-sm font-semibold text-[#0A304E] transition hover:text-[#0A304E]/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0A304E]"
-                  >
-                    <span className="inline-flex flex-wrap items-center">
-                      {renderWordSpans(detailProject.cta.label)}
-                    </span>
-                    <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-                  </a>
+              <div className="detail-card-stack relative">
+                {showPlaceholder && (
+                  <div
+                    className="detail-placeholder pointer-events-none absolute inset-0 rounded-[28px] bg-gradient-to-b from-white/55 via-white/35 to-white/0 backdrop-blur-[6px]"
+                    aria-hidden="true"
+                  />
                 )}
-                <div ref={tagsRef} className="flex flex-wrap gap-2 pt-2">
-                  {detailProject.tags.map((label) => (
-                    <span
-                      key={label}
-                      className="word rounded-full border border-black/10 px-4 py-1 text-xs font-semibold text-[#0A304E]/80"
+                <div
+                  ref={detailCardRef}
+                  className="detail-card relative z-10 flex flex-col gap-6 lg:pt-2"
+                >
+                  <div className="flex items-start gap-4" data-animate-item>
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0A304E]/10 text-[#0A304E]">
+                      <span className="text-lg font-black" aria-hidden="true" />
+                    </div>
+                    <div className="space-y-1">
+                      <h3 data-animate-item className="text-2xl font-semibold text-[#111111]">
+                        {detailProject.name}
+                      </h3>
+                      <p data-animate-item className="text-sm font-medium text-[#0A304E]/80">
+                        {detailProject.subtitle}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="space-y-[6px] text-sm leading-relaxed text-[#374151]">
+                    {detailDescriptionLines.map((line, idx) => (
+                      <span key={`desc-line-${idx}`} data-animate-line className="block">
+                        {line}
+                      </span>
+                    ))}
+                  </div>
+                  {detailProject.testimonial && (
+                    <figure
+                      data-animate-item
+                      className="rounded-3xl border border-black/5 bg-white/80 p-5 text-[#0A304E] shadow-[0_18px_44px_-32px_rgba(15,23,42,0.35)] backdrop-blur-[2px]"
                     >
-                      {label}
-                    </span>
-                  ))}
+                      <blockquote className="text-sm italic leading-relaxed text-[#0A304E]/90">
+                        « {detailProject.testimonial.quote} »
+                      </blockquote>
+                      <figcaption className="mt-3 flex flex-wrap items-center gap-x-2 text-xs font-semibold uppercase tracking-[0.28em] text-[#0A304E]/70">
+                        {detailProject.testimonial.author}
+                        <span className="text-[0.7rem] font-medium normal-case tracking-normal text-[#0A304E]/55">
+                          {detailProject.testimonial.role}
+                        </span>
+                      </figcaption>
+                    </figure>
+                  )}
+                  {detailProject.cta && (
+                    <a
+                      data-animate-item
+                      href={detailProject.cta.href}
+                      className="inline-flex items-center gap-2 self-start text-sm font-semibold text-[#0A304E] transition hover:text-[#0A304E]/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0A304E]"
+                    >
+                      {detailProject.cta.label}
+                      <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                    </a>
+                  )}
+                  <div className="flex flex-wrap gap-2 pt-2">
+                    {detailProject.tags.map((label) => (
+                      <span
+                        key={label}
+                        data-animate-line
+                        className="rounded-full border border-black/10 px-4 py-1 text-xs font-semibold text-[#0A304E]/80"
+                      >
+                        {label}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
             )}
           </div>
         </Reveal>
       </div>
-      <style jsx>{`
-        .word {
-          display: inline-block;
-          will-change: transform, opacity, filter;
-        }
-      `}</style>
     </section>
   );
 }
