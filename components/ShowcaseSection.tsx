@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { ArrowUpRight, ChevronDown, ChevronUp } from "lucide-react";
 import Reveal from "./Reveal";
 import { useLanguage } from "../contexts/LanguageContext";
@@ -46,21 +46,38 @@ type ShowcaseProject = {
 const CARD_ASPECT_RATIO = "891 / 435"; // ~20% shorter height
 const CAROUSEL_ASPECT_RATIO = "1.9 / 1"; // tighter wrapper, ~75% less dead space above/below cards
 const CARD_TRANSITION_EASING = "cubic-bezier(0.22, 1, 0.36, 1)";
-const CARD_TRANSITION = `transform 0.6s ${CARD_TRANSITION_EASING}, opacity 0.6s ${CARD_TRANSITION_EASING}`;
+const CARD_TRANSITION_DURATION_S = 0.8;
+const CARD_TRANSITION = `transform ${CARD_TRANSITION_DURATION_S}s ${CARD_TRANSITION_EASING}, opacity ${CARD_TRANSITION_DURATION_S}s ${CARD_TRANSITION_EASING}`;
 const CARD_BACKGROUND = "linear-gradient(150deg, rgba(230,233,244,0.78) 0%, rgba(244,247,253,0.92) 52%, rgba(255,255,255,0.98) 100%)";
 const NEXT_OVERLAY_GRADIENT =
-  "linear-gradient(180deg, rgba(188,194,206,0.9) 0%, rgba(203,208,220,0.72) 20%, rgba(212,218,229,0.44) 32%, rgba(220,225,235,0.24) 42%, rgba(225,230,239,0.1) 50%, rgba(226,231,240,0.04) 56%, rgba(226,231,240,0) 60%, rgba(226,231,240,0) 100%)";
+  "linear-gradient(180deg, rgba(188,194,206,0.78) 0%, rgba(203,208,220,0.62) 18%, rgba(212,218,229,0.46) 34%, rgba(220,225,235,0.3) 50%, rgba(225,230,239,0.16) 64%, rgba(226,231,240,0.08) 78%, rgba(226,231,240,0) 100%)";
 const PREV_OVERLAY_GRADIENT =
-  "linear-gradient(0deg, rgba(188,194,206,0.9) 0%, rgba(203,208,220,0.72) 20%, rgba(212,218,229,0.44) 32%, rgba(220,225,235,0.24) 42%, rgba(225,230,239,0.1) 50%, rgba(226,231,240,0.04) 56%, rgba(226,231,240,0) 60%, rgba(226,231,240,0) 100%)";
+  "linear-gradient(0deg, rgba(188,194,206,0.78) 0%, rgba(203,208,220,0.62) 18%, rgba(212,218,229,0.46) 34%, rgba(220,225,235,0.3) 50%, rgba(225,230,239,0.16) 64%, rgba(226,231,240,0.08) 78%, rgba(226,231,240,0) 100%)";
 const NEXT_MASK =
-  "linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 34%, rgba(0,0,0,0.55) 46%, rgba(0,0,0,0.25) 54%, rgba(0,0,0,0) 60%, rgba(0,0,0,0) 100%)";
+  "linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 24%, rgba(0,0,0,0.45) 52%, rgba(0,0,0,0.12) 74%, rgba(0,0,0,0) 100%)";
 const PREV_MASK =
-  "linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 34%, rgba(0,0,0,0.55) 46%, rgba(0,0,0,0.25) 54%, rgba(0,0,0,0) 60%, rgba(0,0,0,0) 100%)";
+  "linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 24%, rgba(0,0,0,0.45) 52%, rgba(0,0,0,0.12) 74%, rgba(0,0,0,0) 100%)";
 const useIsomorphicLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
 const ARROW_BUTTON_SIZE_PX = 48;
 const ARROW_STACK_GAP_PX = 4;
 const ARROW_STACK_HEIGHT_PX = ARROW_BUTTON_SIZE_PX * 2 + ARROW_STACK_GAP_PX;
-const INACTIVE_CARD_SCALE = 0.985; // bring overlays closer to the active card
+const INACTIVE_CARD_SCALE = 1;
+const INACTIVE_CARD_Y_OFFSET_PX = 0;
+const ACTIVE_CARD_SCALE_X = 1.08;
+const ACTIVE_CARD_SCALE_Y = 1.25;
+const OVERLAY_HORIZONTAL_SHIFT_PERCENT = 0;
+const INACTIVE_CARD_X_OFFSET_PERCENT = ((ACTIVE_CARD_SCALE_X - 1) / 2) * 100;
+
+function renderWordSpans(text?: string) {
+  if (!text) return null;
+  const segments = text.match(/\S+\s*/g) ?? [];
+  return segments.map((segment, index) => (
+    <span key={`word-${index}`} className="word">
+      {segment}
+    </span>
+  ));
+}
+
 export default function ShowcaseSection() {
   const { dictionary } = useLanguage();
   const copy = (dictionary?.showcase ?? {}) as ShowcaseCopy;
@@ -170,7 +187,19 @@ export default function ShowcaseSection() {
   const isCarouselInteractive = projectCount > 1;
   const safeIndex = projectCount > 0 ? Math.min(activeIndex, projectCount - 1) : 0;
   const activeProject = projects[safeIndex] ?? projects[0];
+  const [displayedProject, setDisplayedProject] = useState<ShowcaseProject | null>(activeProject ?? null);
+  const initialDetailsRenderRef = useRef(true);
+  const pendingDetailsEnterRef = useRef(false);
+  const titleRef = useRef<HTMLHeadingElement | null>(null);
+  const subtitleRef = useRef<HTMLParagraphElement | null>(null);
+  const descriptionRef = useRef<HTMLParagraphElement | null>(null);
+  const ctaRef = useRef<HTMLAnchorElement | null>(null);
+  const tagsRef = useRef<HTMLDivElement | null>(null);
   const activeSlideRef = useRef<HTMLDivElement | null>(null);
+  const cardContentRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+  const previousActiveCardIdRef = useRef<string | null>(projects[safeIndex]?.id ?? null);
+  // PATCH: on mesure la hauteur sur un wrapper non-transformé pour éviter les "sauts"
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
   const [carouselHeight, setCarouselHeight] = useState<number | null>(null);
   const arrowVerticalOffset =
     carouselHeight != null
@@ -183,6 +212,21 @@ export default function ShowcaseSection() {
   const layoutClasses = isCarouselInteractive
     ? "flex flex-col gap-12 lg:grid lg:grid-cols-[minmax(0,1.2fr)_auto_minmax(0,1fr)] lg:items-stretch lg:gap-12"
     : "flex flex-col gap-12 lg:grid lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-stretch lg:gap-12";
+  const collectWordElements = useCallback(() => {
+    const containers = [
+      titleRef.current,
+      subtitleRef.current,
+      descriptionRef.current,
+      ctaRef.current,
+      tagsRef.current,
+    ];
+    const words: HTMLElement[] = [];
+    containers.forEach((container) => {
+      if (!container) return;
+      words.push(...Array.from(container.querySelectorAll<HTMLElement>(".word")));
+    });
+    return words;
+  }, []);
 
   useEffect(() => {
     if (projectCount > 0 && activeIndex >= projectCount) {
@@ -209,7 +253,8 @@ export default function ShowcaseSection() {
 
     if (typeof window === "undefined") return;
 
-    const element = activeSlideRef.current;
+    // PATCH: mesure stable sur le wrapper (sans scale/transform)
+    const element = wrapperRef.current;
     if (!element) return;
 
     const updateHeight = () => {
@@ -231,7 +276,155 @@ export default function ShowcaseSection() {
       window.removeEventListener("resize", updateHeight);
       observer?.disconnect();
     };
-  }, [isCarouselInteractive, safeIndex]);
+    // PATCH: ne pas recalculer à chaque changement de slide
+  }, [isCarouselInteractive]);
+
+  useEffect(() => {
+    const cardMap = cardContentRefs.current;
+    const currentProject = projects[safeIndex];
+    const currentId = currentProject?.id ?? null;
+    const previousId = previousActiveCardIdRef.current;
+
+    if (!currentId) {
+      previousActiveCardIdRef.current = null;
+      return;
+    }
+
+    const enteringNode = cardMap.get(currentId) ?? null;
+    const leavingNode =
+      previousId && previousId !== currentId ? cardMap.get(previousId) ?? null : null;
+
+    if (enteringNode) {
+      enteringNode.classList.remove("portfolio_card-content--leaving");
+      enteringNode.classList.add("portfolio_card-content--entering");
+      enteringNode.addEventListener(
+        "animationend",
+        () => {
+          enteringNode.classList.remove("portfolio_card-content--entering");
+        },
+        { once: true },
+      );
+    }
+
+    if (leavingNode) {
+      leavingNode.classList.remove("portfolio_card-content--entering");
+      leavingNode.classList.add("portfolio_card-content--leaving");
+      leavingNode.addEventListener(
+        "animationend",
+        () => {
+          leavingNode.classList.remove("portfolio_card-content--leaving");
+        },
+        { once: true },
+      );
+    }
+
+    previousActiveCardIdRef.current = currentId;
+  }, [projects, safeIndex]);
+
+  useEffect(() => {
+    if (!activeProject) return;
+
+    if (!displayedProject) {
+      setDisplayedProject(activeProject);
+      return;
+    }
+
+    if (initialDetailsRenderRef.current) {
+      initialDetailsRenderRef.current = false;
+      if (displayedProject.id !== activeProject.id) {
+        setDisplayedProject(activeProject);
+      }
+      return;
+    }
+
+    if (activeProject.id === displayedProject.id) return;
+
+    const reduceMotion =
+      typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (reduceMotion) {
+      pendingDetailsEnterRef.current = false;
+      setDisplayedProject(activeProject);
+      return;
+    }
+
+    const wordEls = collectWordElements();
+    if (wordEls.length === 0) {
+      setDisplayedProject(activeProject);
+      return;
+    }
+
+    const animations = wordEls.map((span, idx) =>
+      span.animate(
+        [
+          { opacity: 1, transform: "translateY(0)", filter: "blur(0px)" },
+          { opacity: 0, transform: "translateY(-14px)", filter: "blur(2px)" },
+        ],
+        {
+          duration: 280,
+          easing: "cubic-bezier(.22,.61,.36,1)",
+          delay: idx * 10,
+          fill: "forwards",
+        },
+      )
+    );
+
+    const animationPromises = animations.map((animation) => animation.finished);
+
+    Promise.all(animationPromises).then(() => {
+      pendingDetailsEnterRef.current = true;
+      setDisplayedProject(activeProject);
+    });
+
+    return () => {
+      animations.forEach((animation) => animation.cancel());
+    };
+  }, [activeProject, collectWordElements, displayedProject]);
+
+  useEffect(() => {
+    if (!displayedProject) return;
+    if (!pendingDetailsEnterRef.current) return;
+
+    const reduceMotion =
+      typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (reduceMotion) {
+      pendingDetailsEnterRef.current = false;
+      return;
+    }
+
+    let animations: Animation[] = [];
+    const rafId = requestAnimationFrame(() => {
+      const wordEls = collectWordElements();
+      animations = wordEls.map((span, idx) =>
+        span.animate(
+          [
+            { opacity: 0, transform: "translateY(16px)", filter: "blur(2px)" },
+            { opacity: 1, transform: "translateY(0)", filter: "blur(0px)" },
+          ],
+          {
+            duration: 360,
+            easing: "cubic-bezier(.22,.61,.36,1)",
+            delay: idx * 12,
+            fill: "forwards",
+          },
+        )
+      );
+
+      const animationPromises = animations.map((animation) => animation.finished);
+      Promise.all(animationPromises).finally(() => {
+        pendingDetailsEnterRef.current = false;
+      });
+    });
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      animations.forEach((animation) => animation.cancel());
+      pendingDetailsEnterRef.current = false;
+    };
+  }, [collectWordElements, displayedProject]);
+
+  const detailProject = displayedProject ?? activeProject;
 
   return (
     <section className="bg-[#F2F5FC] px-4 pt-8 pb-10 sm:pt-12 sm:pb-12">
@@ -261,7 +454,8 @@ export default function ShowcaseSection() {
           <div className={layoutClasses}>
             <div className="flex flex-col gap-1.5 sm:gap-2 lg:items-start lg:place-self-start">
               <div
-                className="group relative mx-auto w-full max-w-[556px] overflow-visible lg:mx-0"
+                ref={wrapperRef} // PATCH: wrapper de mesure non-transformé
+                className="group relative mx-auto w-full max-w-[556px] overflow-visible lg:mx-0 lg:max-w-[620px]"
                 style={{
                   aspectRatio: CAROUSEL_ASPECT_RATIO,
                   marginTop: carouselVerticalShift > 0 ? `${carouselVerticalShift}px` : undefined,
@@ -273,7 +467,6 @@ export default function ShowcaseSection() {
                 >
                   {projects.map((project, index) => {
                     const isActive = index === safeIndex;
-                    const cardScale = isActive ? 1 : INACTIVE_CARD_SCALE;
                     const cardOpacity = 1;
                     const overlayOpacity = isActive ? 0 : 1;
                     const prevIndex = (safeIndex - 1 + projectCount) % projectCount;
@@ -293,12 +486,20 @@ export default function ShowcaseSection() {
                         : overlayOrientation === "below"
                           ? NEXT_OVERLAY_GRADIENT
                           : "transparent";
+                    // PATCH: rapprochement visuel via un léger translateY des inactives
+                    const translateY =
+                      isPrevSlide ? INACTIVE_CARD_Y_OFFSET_PX
+                      : isNextSlide ? -INACTIVE_CARD_Y_OFFSET_PX
+                      : 0;
+
                     const cardStyle: CSSProperties = {
                       aspectRatio: CARD_ASPECT_RATIO,
-                      transform: `scale(${cardScale})`,
+                      transform: isActive
+                        ? `scaleX(${ACTIVE_CARD_SCALE_X}) scaleY(${ACTIVE_CARD_SCALE_Y})`
+                        : `translateX(${INACTIVE_CARD_X_OFFSET_PERCENT}%) translateY(${translateY}px) scale(${INACTIVE_CARD_SCALE})`,
                       opacity: cardOpacity,
                       transition: CARD_TRANSITION,
-                      transformOrigin: "center",
+                      transformOrigin: isActive ? "left center" : "center",
                     };
 
                     if (overlayOrientation) {
@@ -315,31 +516,43 @@ export default function ShowcaseSection() {
                             activeSlideRef.current = node;
                           }
                         }}
-                        className="portfolio-slide flex h-full w-full max-w-[556px] flex-shrink-0 flex-col items-start"
+                        className="portfolio-slide flex h-full w-full max-w-[556px] flex-shrink-0 flex-col items-start lg:max-w-[620px]"
                         data-slide-index={slideNumber}
                         aria-hidden={!isActive}
                       >
-                        <div className="portfolio_card relative w-full max-w-[556px]" style={cardStyle}>
+                        <div className="portfolio_card relative w-full max-w-[556px] lg:max-w-[620px]" style={cardStyle}>
                           <div className="absolute inset-0 overflow-hidden rounded-[32px]" aria-hidden="true">
                             <div
                               className="absolute inset-0 rounded-[32px] transition-opacity duration-500 ease-out"
-                              style={{ opacity: overlayOpacity, background: overlayBackground }}
+                              style={{
+                                opacity: overlayOpacity,
+                                background: overlayBackground,
+                                transform:
+                                  OVERLAY_HORIZONTAL_SHIFT_PERCENT !== 0
+                                    ? `translateX(${OVERLAY_HORIZONTAL_SHIFT_PERCENT}%)`
+                                    : undefined,
+                                transformOrigin: "center",
+                              }}
                             />
-                            {overlayOrientation === "above" && (
-                              <div
-                                className="absolute bottom-2 left-1/2 h-[18px] w-[86%] -translate-x-1/2 rounded-full bg-gradient-to-b from-[#B8C0D0]/45 via-[#D5DBE6]/16 to-transparent blur-xl transition-opacity duration-500 ease-out"
-                                style={{ opacity: overlayOpacity }}
-                              />
-                            )}
+                            {/* Soft halos intentionally removed to minimise gap perception */}
                             {/* Highlight below intentionally omitted to avoid extra light band */}
                           </div>
                           <div
-                            className="relative z-10 flex h-full flex-col justify-between gap-6 rounded-[32px] border bg-white/90 px-8 pt-8 pb-2 text-[#1F2937] shadow-[0_20px_55px_-35px_rgba(15,23,42,0.45)]"
+                            ref={(node) => {
+                              if (node) {
+                                cardContentRefs.current.set(project.id, node);
+                              } else {
+                                cardContentRefs.current.delete(project.id);
+                              }
+                            }}
+                            className="portfolio_card-content relative z-10 flex h-full flex-col justify-between gap-6 rounded-[32px] border bg-white/90 px-8 pt-8 pb-2 text-[#1F2937] shadow-[0_20px_55px_-35px_rgba(15,23,42,0.45)]"
                             style={{
                               background: CARD_BACKGROUND,
                               borderColor: "rgba(255, 255, 255, 0.7)",
                               opacity: isActive ? 1 : 0,
-                              transition: "opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1)",
+                              transition:
+                                `opacity ${CARD_TRANSITION_DURATION_S}s ${CARD_TRANSITION_EASING}, transform 0.85s ${CARD_TRANSITION_EASING}, filter 0.85s ${CARD_TRANSITION_EASING}`,
+                              willChange: "transform, opacity, filter",
                             }}
                           >
                             <div className="space-y-6">
@@ -417,32 +630,41 @@ export default function ShowcaseSection() {
               </div>
             )}
 
-            {activeProject && (
+            {detailProject && (
               <div className="flex flex-col gap-6 lg:pt-2">
                 <div className="flex items-start gap-4">
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0A304E]/10 text-[#0A304E]">
                     <span className="text-lg font-black" aria-hidden="true" />
                   </div>
                   <div className="space-y-1">
-                    <h3 className="text-2xl font-semibold text-[#111111]">{activeProject.name}</h3>
-                    <p className="text-sm font-medium text-[#0A304E]/80">{activeProject.subtitle}</p>
+                    <h3 ref={titleRef} className="text-2xl font-semibold text-[#111111]">
+                      {renderWordSpans(detailProject.name)}
+                    </h3>
+                    <p ref={subtitleRef} className="text-sm font-medium text-[#0A304E]/80">
+                      {renderWordSpans(detailProject.subtitle)}
+                    </p>
                   </div>
                 </div>
-                <p className="text-sm leading-relaxed text-[#374151]">{activeProject.description}</p>
-                {activeProject.cta && (
+                <p ref={descriptionRef} className="text-sm leading-relaxed text-[#374151]">
+                  {renderWordSpans(detailProject.description)}
+                </p>
+                {detailProject.cta && (
                   <a
-                    href={activeProject.cta.href}
+                    ref={ctaRef}
+                    href={detailProject.cta.href}
                     className="inline-flex items-center gap-2 self-start text-sm font-semibold text-[#0A304E] transition hover:text-[#0A304E]/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0A304E]"
                   >
-                    {activeProject.cta.label}
+                    <span className="inline-flex flex-wrap items-center">
+                      {renderWordSpans(detailProject.cta.label)}
+                    </span>
                     <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
                   </a>
                 )}
-                <div className="flex flex-wrap gap-2 pt-2">
-                  {activeProject.tags.map((label) => (
+                <div ref={tagsRef} className="flex flex-wrap gap-2 pt-2">
+                  {detailProject.tags.map((label) => (
                     <span
                       key={label}
-                      className="rounded-full border border-black/10 px-4 py-1 text-xs font-semibold text-[#0A304E]/80"
+                      className="word rounded-full border border-black/10 px-4 py-1 text-xs font-semibold text-[#0A304E]/80"
                     >
                       {label}
                     </span>
@@ -453,6 +675,12 @@ export default function ShowcaseSection() {
           </div>
         </Reveal>
       </div>
+      <style jsx>{`
+        .word {
+          display: inline-block;
+          will-change: transform, opacity, filter;
+        }
+      `}</style>
     </section>
   );
 }
