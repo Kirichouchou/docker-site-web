@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { gsap } from "gsap";
 import { ArrowUpRight, ChevronDown, ChevronUp } from "lucide-react";
 import Reveal from "./Reveal";
 import { useLanguage } from "../contexts/LanguageContext";
@@ -67,6 +68,15 @@ const ACTIVE_CARD_SCALE_X = 1.08;
 const ACTIVE_CARD_SCALE_Y = 1.25;
 const OVERLAY_HORIZONTAL_SHIFT_PERCENT = 0;
 const INACTIVE_CARD_X_OFFSET_PERCENT = ((ACTIVE_CARD_SCALE_X - 1) / 2) * 100;
+const DETAIL_EXIT_DURATION_MS = 360;
+const DETAIL_EXIT_STAGGER_MS = 60;
+const DETAIL_EXIT_LINE_STAGGER_MS = 38;
+const DETAIL_ENTRY_DURATION_MS = 520;
+const DETAIL_ENTRY_STAGGER_MS = 80;
+const DETAIL_ENTRY_LINE_STAGGER_MS = 110;
+const DETAIL_ENTRY_BASE_DELAY_MS = 100;
+const DETAIL_PLACEHOLDER_FADE_DELAY_MS = 180;
+const DETAIL_TIMELINE_EASE = "power3.out";
 
 export default function ShowcaseSection() {
   const { dictionary } = useLanguage();
@@ -178,14 +188,17 @@ export default function ShowcaseSection() {
   const safeIndex = projectCount > 0 ? Math.min(activeIndex, projectCount - 1) : 0;
   const activeProject = projects[safeIndex] ?? projects[0];
   const [displayedProject, setDisplayedProject] = useState<ShowcaseProject | null>(activeProject ?? null);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [showPlaceholder, setShowPlaceholder] = useState(false);
   const detailCardRef = useRef<HTMLDivElement | null>(null);
   const activeSlideRef = useRef<HTMLDivElement | null>(null);
   const cardContentRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const previousActiveCardIdRef = useRef<string | null>(projects[safeIndex]?.id ?? null);
   // PATCH: on mesure la hauteur sur un wrapper non-transformé pour éviter les "sauts"
   const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const placeholderRef = useRef<HTMLDivElement | null>(null);
+  const pendingEntryProjectRef = useRef<ShowcaseProject | null>(null);
+  const exitTimelineRef = useRef<gsap.core.Timeline | null>(null);
+  const entryTimelineRef = useRef<gsap.core.Timeline | null>(null);
+  const entryDelayTimeoutRef = useRef<number | null>(null);
   const [carouselHeight, setCarouselHeight] = useState<number | null>(null);
   const arrowVerticalOffset =
     carouselHeight != null
@@ -211,6 +224,22 @@ export default function ShowcaseSection() {
       setActiveIndex(0);
     }
   }, [activeIndex, projectCount]);
+
+  useEffect(() => {
+    if (placeholderRef.current) {
+      gsap.set(placeholderRef.current, { opacity: 0 });
+    }
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      exitTimelineRef.current?.kill();
+      entryTimelineRef.current?.kill();
+      if (entryDelayTimeoutRef.current !== null) {
+        window.clearTimeout(entryDelayTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleNext = () => {
     if (!isCarouselInteractive) return;
@@ -299,176 +328,221 @@ export default function ShowcaseSection() {
     previousActiveCardIdRef.current = currentId;
   }, [projects, safeIndex]);
 
-  useEffect(() => {
-    if (!activeProject) return;
+useEffect(() => {
+  if (!activeProject) return;
 
-    if (!displayedProject) {
+  const reduceMotion =
+    typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (!displayedProject || reduceMotion) {
+    exitTimelineRef.current?.kill();
+    entryTimelineRef.current?.kill();
+    if (entryDelayTimeoutRef.current !== null) {
+      window.clearTimeout(entryDelayTimeoutRef.current);
+      entryDelayTimeoutRef.current = null;
+    }
+    pendingEntryProjectRef.current = null;
+    setDisplayedProject(activeProject);
+    if (placeholderRef.current) {
+      gsap.set(placeholderRef.current, { opacity: 0 });
+    }
+    return;
+  }
+
+  if (activeProject.id === displayedProject.id) return;
+
+  const card = detailCardRef.current;
+  const placeholder = placeholderRef.current;
+
+  if (!card) {
+    setDisplayedProject(activeProject);
+    if (placeholder) {
+      gsap.set(placeholder, { opacity: 0 });
+    }
+    return;
+  }
+
+  exitTimelineRef.current?.kill();
+  entryTimelineRef.current?.kill();
+  if (entryDelayTimeoutRef.current !== null) {
+    window.clearTimeout(entryDelayTimeoutRef.current);
+    entryDelayTimeoutRef.current = null;
+  }
+
+  pendingEntryProjectRef.current = null;
+  if (placeholder) {
+    gsap.set(placeholder, { opacity: 0 });
+  }
+
+  const itemEls = Array.from(card.querySelectorAll<HTMLElement>("[data-animate-item]"));
+  const lineEls = Array.from(card.querySelectorAll<HTMLElement>("[data-animate-line]"));
+
+  if (itemEls.length === 0 && lineEls.length === 0) {
+    if (placeholder) {
+      gsap.set(placeholder, { opacity: 1 });
+    }
+    pendingEntryProjectRef.current = activeProject;
+    entryDelayTimeoutRef.current = window.setTimeout(() => {
       setDisplayedProject(activeProject);
-      return;
+      entryDelayTimeoutRef.current = null;
+    }, DETAIL_PLACEHOLDER_FADE_DELAY_MS / 2);
+    return;
+  }
+
+  const exitTimeline = gsap.timeline({
+    defaults: {
+      ease: DETAIL_TIMELINE_EASE,
+    },
+    onComplete: () => {
+      if (placeholder) {
+        gsap.to(placeholder, { opacity: 1, duration: 0.18, ease: "power1.out" });
+      }
+      pendingEntryProjectRef.current = activeProject;
+      entryDelayTimeoutRef.current = window.setTimeout(() => {
+        setDisplayedProject(activeProject);
+        entryDelayTimeoutRef.current = null;
+      }, DETAIL_PLACEHOLDER_FADE_DELAY_MS / 2);
+      if (exitTimelineRef.current === exitTimeline) {
+        exitTimelineRef.current = null;
+      }
+    },
+  });
+
+  if (itemEls.length > 0) {
+    exitTimeline.to(itemEls, {
+      opacity: 0,
+      y: -28,
+      filter: "blur(6px)",
+      duration: DETAIL_EXIT_DURATION_MS / 1000,
+      stagger: { each: DETAIL_EXIT_STAGGER_MS / 1000 },
+    }, 0);
+  }
+
+  if (lineEls.length > 0) {
+    exitTimeline.to(lineEls, {
+      opacity: 0,
+      y: -24,
+      filter: "blur(5px)",
+      duration: (DETAIL_EXIT_DURATION_MS - 40) / 1000,
+      stagger: { each: DETAIL_EXIT_LINE_STAGGER_MS / 1000 },
+    }, Math.max(0, (DETAIL_EXIT_DURATION_MS - 240) / 1000));
+  }
+
+  exitTimelineRef.current = exitTimeline;
+
+  return () => {
+    exitTimeline.kill();
+    if (exitTimelineRef.current === exitTimeline) {
+      exitTimelineRef.current = null;
     }
+  };
+}, [activeProject?.id, displayedProject?.id]);
 
-    if (activeProject.id === displayedProject.id) return;
+useLayoutEffect(() => {
+  const nextProject = pendingEntryProjectRef.current;
+  if (!nextProject) return;
+  if (!displayedProject || displayedProject.id !== nextProject.id) return;
 
-    const reduceMotion =
-      typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  pendingEntryProjectRef.current = null;
 
-    if (reduceMotion) {
-      setDisplayedProject(activeProject);
-      setShowPlaceholder(false);
-      setIsTransitioning(false);
-      return;
+  const reduceMotion =
+    typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (reduceMotion) {
+    if (placeholderRef.current) {
+      gsap.set(placeholderRef.current, { opacity: 0 });
     }
+    return;
+  }
 
-    const card = detailCardRef.current;
-    if (!card) {
-      setDisplayedProject(activeProject);
-      setShowPlaceholder(false);
-      setIsTransitioning(false);
-      return;
+  const card = detailCardRef.current;
+  const placeholder = placeholderRef.current;
+
+  if (!card) {
+    if (placeholder) {
+      gsap.set(placeholder, { opacity: 0 });
     }
+    return;
+  }
 
-    setIsTransitioning(true);
+  const itemEls = Array.from(card.querySelectorAll<HTMLElement>("[data-animate-item]"));
+  const lineEls = Array.from(card.querySelectorAll<HTMLElement>("[data-animate-line]"));
 
-    const itemEls = Array.from(card.querySelectorAll<HTMLElement>("[data-animate-item]"));
-    const lineEls = Array.from(card.querySelectorAll<HTMLElement>("[data-animate-line]"));
-    const exitAnimations: Animation[] = [];
+  gsap.set(itemEls, { opacity: 0, y: 32, filter: "blur(10px)" });
+  gsap.set(lineEls, { opacity: 0, y: 36, filter: "blur(8px)" });
+  if (placeholder) {
+    gsap.set(placeholder, { opacity: 1 });
+  }
 
-    itemEls.forEach((el, idx) => {
-      exitAnimations.push(
-        el.animate(
-          [
-            { opacity: 1, transform: "translateY(0)", filter: "blur(0px)" },
-            { opacity: 0, transform: "translateY(-18px)", filter: "blur(3px)" },
-          ],
-          {
-            duration: 260,
-            easing: "cubic-bezier(.22,.61,.36,1)",
-            delay: idx * 45,
-            fill: "forwards",
-          },
-        ),
-      );
-    });
+  entryTimelineRef.current?.kill();
+  if (entryDelayTimeoutRef.current !== null) {
+    window.clearTimeout(entryDelayTimeoutRef.current);
+    entryDelayTimeoutRef.current = null;
+  }
 
-    lineEls.forEach((el, idx) => {
-      exitAnimations.push(
-        el.animate(
-          [
-            { opacity: 1, transform: "translateY(0)", filter: "blur(0px)" },
-            { opacity: 0, transform: "translateY(-14px)", filter: "blur(3px)" },
-          ],
-          {
-            duration: 240,
-            easing: "cubic-bezier(.22,.61,.36,1)",
-            delay: idx * 30,
-            fill: "forwards",
-          },
-        ),
-      );
-    });
+  const entryTimeline = gsap.timeline({
+    defaults: {
+      ease: DETAIL_TIMELINE_EASE,
+    },
+  });
 
-    let cancelled = false;
+  if (placeholder) {
+    entryTimeline.to(
+      placeholder,
+      {
+        opacity: 0,
+        duration: 0.28,
+        ease: "power1.out",
+      },
+      Math.max(0, (DETAIL_ENTRY_BASE_DELAY_MS - 60) / 1000),
+    );
+  }
 
-    Promise.allSettled(exitAnimations.map((animation) => animation.finished)).then(() => {
-      if (cancelled) return;
-      exitAnimations.forEach((animation) => animation.cancel());
-      setShowPlaceholder(true);
-      setDisplayedProject(activeProject);
-    });
+  if (itemEls.length > 0) {
+    entryTimeline.to(itemEls, {
+      opacity: 1,
+      y: 0,
+      filter: "blur(0px)",
+      duration: DETAIL_ENTRY_DURATION_MS / 1000,
+      stagger: { each: DETAIL_ENTRY_STAGGER_MS / 1000 },
+    }, DETAIL_ENTRY_BASE_DELAY_MS / 1000);
+  }
 
-    return () => {
-      cancelled = true;
-      exitAnimations.forEach((animation) => animation.cancel());
-    };
-  }, [activeProject, displayedProject]);
+  if (lineEls.length > 0) {
+    entryTimeline.to(lineEls, {
+      opacity: 1,
+      y: 0,
+      filter: "blur(0px)",
+      duration: (DETAIL_ENTRY_DURATION_MS - 40) / 1000,
+      stagger: { each: DETAIL_ENTRY_LINE_STAGGER_MS / 1000 },
+    }, DETAIL_ENTRY_BASE_DELAY_MS / 1000 + 0.12);
+  }
 
-  useEffect(() => {
-    if (!displayedProject) return;
-    if (!isTransitioning) return;
-
-    const reduceMotion =
-      typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    if (reduceMotion) {
-      setIsTransitioning(false);
-      setShowPlaceholder(false);
-      return;
+  entryTimeline.eventCallback("onComplete", () => {
+    if (placeholder) {
+      gsap.set(placeholder, { opacity: 0 });
     }
-
-    const card = detailCardRef.current;
-    if (!card) {
-      setIsTransitioning(false);
-      setShowPlaceholder(false);
-      return;
+    if (entryTimelineRef.current === entryTimeline) {
+      entryTimelineRef.current = null;
     }
+  });
 
-    let cancelled = false;
-    let entryAnimations: Animation[] = [];
+  entryTimelineRef.current = entryTimeline;
 
-    const startEntry = () => {
-      if (cancelled) return;
+  if (entryTimeline.totalDuration() === 0 && placeholder) {
+    gsap.set(placeholder, { opacity: 0 });
+  }
 
-      const itemEls = Array.from(card.querySelectorAll<HTMLElement>("[data-animate-item]"));
-      const lineEls = Array.from(card.querySelectorAll<HTMLElement>("[data-animate-line]"));
-
-      entryAnimations = [];
-
-      itemEls.forEach((el, idx) => {
-        entryAnimations.push(
-          el.animate(
-            [
-              { opacity: 0, transform: "translateY(18px)", filter: "blur(6px)" },
-              { opacity: 1, transform: "translateY(0)", filter: "blur(0px)" },
-            ],
-            {
-              duration: 420,
-              easing: "cubic-bezier(.22,.61,.36,1)",
-              delay: 120 + idx * 70,
-              fill: "forwards",
-            },
-          ),
-        );
-      });
-
-      lineEls.forEach((el, idx) => {
-        entryAnimations.push(
-          el.animate(
-            [
-              { opacity: 0, transform: "translateY(22px)", filter: "blur(6px)" },
-              { opacity: 1, transform: "translateY(0)", filter: "blur(0px)" },
-            ],
-            {
-              duration: 400,
-              easing: "cubic-bezier(.22,.61,.36,1)",
-              delay: 160 + idx * 90,
-              fill: "forwards",
-            },
-          ),
-        );
-      });
-
-      setTimeout(() => {
-        if (!cancelled) {
-          setShowPlaceholder(false);
-        }
-      }, 150);
-
-      Promise.allSettled(entryAnimations.map((animation) => animation.finished)).then(() => {
-        if (cancelled) return;
-        entryAnimations.forEach((animation) => animation.cancel());
-        setIsTransitioning(false);
-        setShowPlaceholder(false);
-      });
-    };
-
-    const raf = requestAnimationFrame(startEntry);
-
-    return () => {
-      cancelled = true;
-      cancelAnimationFrame(raf);
-      entryAnimations.forEach((animation) => animation.cancel());
-    };
-  }, [displayedProject, isTransitioning]);
+  return () => {
+    entryTimeline.kill();
+    if (entryTimelineRef.current === entryTimeline) {
+      entryTimelineRef.current = null;
+    }
+    if (placeholder) {
+      gsap.set(placeholder, { opacity: 0 });
+    }
+  };
+}, [displayedProject?.id]);
 
   return (
     <section className="bg-[#F2F5FC] px-4 pt-8 pb-10 sm:pt-12 sm:pb-12">
@@ -676,32 +750,49 @@ export default function ShowcaseSection() {
 
             {detailProject && (
               <div className="detail-card-stack relative">
-                {showPlaceholder && (
-                  <div
-                    className="detail-placeholder pointer-events-none absolute inset-0 rounded-[28px] bg-gradient-to-b from-white/55 via-white/35 to-white/0 backdrop-blur-[6px]"
-                    aria-hidden="true"
-                  />
-                )}
+                <div
+                  ref={placeholderRef}
+                  className="detail-placeholder pointer-events-none absolute inset-0 rounded-[28px] bg-gradient-to-b from-white/55 via-white/35 to-white/0 backdrop-blur-[6px]"
+                  aria-hidden="true"
+                  style={{ opacity: 0 }}
+                />
                 <div
                   ref={detailCardRef}
                   className="detail-card relative z-10 flex flex-col gap-6 lg:pt-2"
                 >
-                  <div className="flex items-start gap-4" data-animate-item>
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0A304E]/10 text-[#0A304E]">
+                  <div className="flex items-start gap-4">
+                    <div
+                      className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0A304E]/10 text-[#0A304E]"
+                      data-animate-item
+                      data-animate-order="0"
+                    >
                       <span className="text-lg font-black" aria-hidden="true" />
                     </div>
                     <div className="space-y-1">
-                      <h3 data-animate-item className="text-2xl font-semibold text-[#111111]">
+                      <h3
+                        data-animate-item
+                        data-animate-order="1"
+                        className="text-2xl font-semibold text-[#111111]"
+                      >
                         {detailProject.name}
                       </h3>
-                      <p data-animate-item className="text-sm font-medium text-[#0A304E]/80">
+                      <p
+                        data-animate-item
+                        data-animate-order="2"
+                        className="text-sm font-medium text-[#0A304E]/80"
+                      >
                         {detailProject.subtitle}
                       </p>
                     </div>
                   </div>
                   <div className="space-y-[6px] text-sm leading-relaxed text-[#374151]">
                     {detailDescriptionLines.map((line, idx) => (
-                      <span key={`desc-line-${idx}`} data-animate-line className="block">
+                      <span
+                        key={`desc-line-${idx}`}
+                        data-animate-line
+                        data-animate-line-order={String(idx)}
+                        className="block"
+                      >
                         {line}
                       </span>
                     ))}
@@ -709,6 +800,7 @@ export default function ShowcaseSection() {
                   {detailProject.testimonial && (
                     <figure
                       data-animate-item
+                      data-animate-order="4"
                       className="rounded-3xl border border-black/5 bg-white/80 p-5 text-[#0A304E] shadow-[0_18px_44px_-32px_rgba(15,23,42,0.35)] backdrop-blur-[2px]"
                     >
                       <blockquote className="text-sm italic leading-relaxed text-[#0A304E]/90">
@@ -725,6 +817,7 @@ export default function ShowcaseSection() {
                   {detailProject.cta && (
                     <a
                       data-animate-item
+                      data-animate-order="5"
                       href={detailProject.cta.href}
                       className="inline-flex items-center gap-2 self-start text-sm font-semibold text-[#0A304E] transition hover:text-[#0A304E]/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0A304E]"
                     >
@@ -733,10 +826,11 @@ export default function ShowcaseSection() {
                     </a>
                   )}
                   <div className="flex flex-wrap gap-2 pt-2">
-                    {detailProject.tags.map((label) => (
+                    {detailProject.tags.map((label, idx) => (
                       <span
                         key={label}
                         data-animate-line
+                        data-animate-line-order={String(detailDescriptionLines.length + idx)}
                         className="rounded-full border border-black/10 px-4 py-1 text-xs font-semibold text-[#0A304E]/80"
                       >
                         {label}
