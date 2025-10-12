@@ -19,7 +19,7 @@ export default function Hero() {
   const { open } = useContactOverlay();
 
   return (
-    <section className="min-h-[31.6vh] flex flex-col items-center justify-start px-4 pt-[72px] pb-16 bg-[#F2F5FC]">
+    <section className="min-h-[calc(100vh-80px)] sm:min-h-[calc(100vh-96px)] flex flex-col items-center justify-start px-4 pt-[72px] pb-20 sm:pb-28 lg:pb-32 bg-[#F2F5FC]">
       <div className="w-full max-w-[960px] text-center mt-8 md:mt-12 space-y-8">
         <Reveal
           as="h1"

@@ -51,9 +51,9 @@ const CARD_TRANSITION_DURATION_S = 0.8;
 const CARD_TRANSITION = `transform ${CARD_TRANSITION_DURATION_S}s ${CARD_TRANSITION_EASING}, opacity ${CARD_TRANSITION_DURATION_S}s ${CARD_TRANSITION_EASING}`;
 const CARD_BACKGROUND = "linear-gradient(150deg, rgba(230,233,244,0.78) 0%, rgba(244,247,253,0.92) 52%, rgba(255,255,255,0.98) 100%)";
 const NEXT_OVERLAY_GRADIENT =
-  "linear-gradient(180deg, rgba(188,194,206,0.78) 0%, rgba(203,208,220,0.62) 18%, rgba(212,218,229,0.46) 34%, rgba(220,225,235,0.3) 50%, rgba(225,230,239,0.16) 64%, rgba(226,231,240,0.08) 78%, rgba(226,231,240,0) 100%)";
+  "linear-gradient(180deg, rgba(188,194,206,0.78) 0%, rgba(203,208,220,0.62) 13%, rgba(212,218,229,0.46) 24%, rgba(220,225,235,0.3) 35%, rgba(225,230,239,0.16) 45%, rgba(226,231,240,0.08) 55%, rgba(226,231,240,0) 70%)";
 const PREV_OVERLAY_GRADIENT =
-  "linear-gradient(0deg, rgba(188,194,206,0.78) 0%, rgba(203,208,220,0.62) 18%, rgba(212,218,229,0.46) 34%, rgba(220,225,235,0.3) 50%, rgba(225,230,239,0.16) 64%, rgba(226,231,240,0.08) 78%, rgba(226,231,240,0) 100%)";
+  "linear-gradient(0deg, rgba(188,194,206,0.78) 0%, rgba(203,208,220,0.62) 13%, rgba(212,218,229,0.46) 24%, rgba(220,225,235,0.3) 35%, rgba(225,230,239,0.16) 45%, rgba(226,231,240,0.08) 55%, rgba(226,231,240,0) 70%)";
 const NEXT_MASK =
   "linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 24%, rgba(0,0,0,0.45) 52%, rgba(0,0,0,0.12) 74%, rgba(0,0,0,0) 100%)";
 const PREV_MASK =
@@ -81,6 +81,7 @@ const DETAIL_TIMELINE_EASE = "power3.out";
 export default function ShowcaseSection() {
   const { dictionary } = useLanguage();
   const copy = (dictionary?.showcase ?? {}) as ShowcaseCopy;
+  const testimonialsEnabled = false; // toggle to re-enable testimonial bubbles later
 
   const fallbackHeadlineLines = [
     "Des expériences digitales",
@@ -545,10 +546,10 @@ useLayoutEffect(() => {
 }, [displayedProject?.id]);
 
   return (
-    <section className="bg-[#F2F5FC] px-4 pt-8 pb-10 sm:pt-12 sm:pb-12">
+    <section className="bg-[#F2F5FC] px-4 pt-12 pb-12 sm:pt-16 sm:pb-16 mt-8 sm:mt-12 lg:mt-14">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-8">
         <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
-          <Reveal className="max-w-2xl space-y-6">
+          <Reveal className="relative z-10 mt-[clamp(2.5rem,7vw,6rem)] max-w-2xl space-y-6">
             <h2 className="font-black leading-[1.05] text-[clamp(2.4rem,5.25vw,3.45rem)] text-[#111111]">
               <span className="block">{headlineLineOne}</span>
               <span className="block text-[#0A304E]">{headlineLineTwo}</span>
@@ -556,19 +557,19 @@ useLayoutEffect(() => {
             <button
               type="button"
               onClick={openBooking}
-              className="inline-flex items-center gap-2 rounded-full bg-[#0A304E] px-7 py-3 text-sm font-semibold text-white shadow-[0_24px_65px_-32px_rgba(10,48,78,0.55)] transition hover:translate-y-[-2px] hover:bg-[#0C3B5F] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0A304E]"
+              className="inline-flex items-center gap-2 rounded-full bg-[#0A304E] px-7 py-3 text-sm font-semibold text-white shadow-[0_20px_55px_-32px_rgba(10,48,78,0.55)] transition hover:translate-y-[-2px] hover:bg-[#0C3B5F] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0A304E]"
             >
             {ctaLabel}
             <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
           </button>
         </Reveal>
           {hasPartnersHighlight && (
-            <Reveal delay={160} className="max-w-sm self-start text-sm font-medium text-[#0A304E]">
+            <Reveal delay={160} className="relative z-0 max-w-sm self-start text-sm font-medium text-[#0A304E]">
               <p className="text-right text-base sm:text-lg text-[#111111]/70">{partnersHighlight}</p>
             </Reveal>
           )}
         </div>
-        <Reveal delay={260} className="mt-[55px] sm:mt-[66px]">
+        <Reveal delay={260} className="mt-[5%]">
           <div className={layoutClasses}>
             <div className="flex flex-col gap-1.5 sm:gap-2 lg:items-start lg:place-self-start">
               <div
@@ -581,7 +582,7 @@ useLayoutEffect(() => {
               >
                 <div
                   className="flex h-full w-full flex-col transition-transform duration-500 ease-out"
-                  style={{ transform: `translateY(-${safeIndex * 100}%)` }}
+                  style={{ transform: `translateY(calc(-${safeIndex * 100}% + 10%))` }}
                 >
                   {projects.map((project, index) => {
                     const isActive = index === safeIndex;
@@ -616,6 +617,7 @@ useLayoutEffect(() => {
                         ? `scaleX(${ACTIVE_CARD_SCALE_X}) scaleY(${ACTIVE_CARD_SCALE_Y})`
                         : `translateX(${INACTIVE_CARD_X_OFFSET_PERCENT}%) translateY(${translateY}px) scale(${INACTIVE_CARD_SCALE})`,
                       opacity: cardOpacity,
+                      pointerEvents: isActive ? "auto" : "none",
                       transition: CARD_TRANSITION,
                       transformOrigin: isActive ? "left center" : "center",
                     };
@@ -637,9 +639,14 @@ useLayoutEffect(() => {
                         className="portfolio-slide flex h-full w-full max-w-[556px] flex-shrink-0 flex-col items-start lg:max-w-[620px]"
                         data-slide-index={slideNumber}
                         aria-hidden={!isActive}
+                        style={{ pointerEvents: isActive ? "auto" : "none" }}
                       >
                         <div className="portfolio_card relative w-full max-w-[556px] lg:max-w-[620px]" style={cardStyle}>
-                          <div className="absolute inset-0 overflow-hidden rounded-[32px]" aria-hidden="true">
+                          <div
+                            className="absolute inset-0 overflow-hidden rounded-[32px]"
+                            aria-hidden="true"
+                            style={{ pointerEvents: "none" }}
+                          >
                             <div
                               className="absolute inset-0 rounded-[32px] transition-opacity duration-500 ease-out"
                               style={{
@@ -663,7 +670,7 @@ useLayoutEffect(() => {
                                 cardContentRefs.current.delete(project.id);
                               }
                             }}
-                            className="portfolio_card-content relative z-10 flex h-full flex-col justify-between gap-6 rounded-[32px] border bg-white/90 px-8 pt-8 pb-2 text-[#1F2937] shadow-[0_20px_55px_-35px_rgba(15,23,42,0.45)]"
+                            className="portfolio_card-content relative z-10 flex h-full flex-col justify-between gap-6 rounded-[32px] border bg-white/90 px-8 pt-8 pb-2 text-[#1F2937] shadow-[0_17px_47px_-35px_rgba(15,23,42,0.45)]"
                             style={{
                               background: CARD_BACKGROUND,
                               borderColor: "rgba(255, 255, 255, 0.7)",
@@ -700,7 +707,7 @@ useLayoutEffect(() => {
                     <button
                       type="button"
                       onClick={handlePrev}
-                      className="flex h-12 w-12 items-center justify-center rounded-full bg-white/80 text-[#0A304E] shadow-[0_10px_30px_-18px_rgba(15,23,42,0.65)] transition hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0A304E]"
+                      className="flex h-12 w-12 items-center justify-center rounded-full bg-white/80 text-[#0A304E] shadow-[0_8px_26px_-18px_rgba(15,23,42,0.65)] transition hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0A304E]"
                     >
                       <ChevronUp className="h-5 w-5" aria-hidden="true" />
                       <span className="sr-only">Projet precedent</span>
@@ -708,7 +715,7 @@ useLayoutEffect(() => {
                     <button
                       type="button"
                       onClick={handleNext}
-                      className="flex h-12 w-12 items-center justify-center rounded-full bg-white/80 text-[#0A304E] shadow-[0_10px_30px_-18px_rgba(15,23,42,0.65)] transition hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0A304E]"
+                      className="flex h-12 w-12 items-center justify-center rounded-full bg-white/80 text-[#0A304E] shadow-[0_8px_26px_-18px_rgba(15,23,42,0.65)] transition hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0A304E]"
                     >
                       <ChevronDown className="h-5 w-5" aria-hidden="true" />
                       <span className="sr-only">Projet suivant</span>
@@ -732,7 +739,7 @@ useLayoutEffect(() => {
                 <button
                   type="button"
                   onClick={handlePrev}
-                  className="flex h-12 w-12 items-center justify-center rounded-full bg-white/90 text-[#0A304E] shadow-[0_12px_36px_-22px_rgba(15,23,42,0.65)] transition hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0A304E]"
+                  className="flex h-12 w-12 items-center justify-center rounded-full bg-white/90 text-[#0A304E] shadow-[0_10px_31px_-22px_rgba(15,23,42,0.65)] transition hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0A304E]"
                 >
                   <ChevronUp className="h-5 w-5" aria-hidden="true" />
                   <span className="sr-only">Projet precedent</span>
@@ -740,7 +747,7 @@ useLayoutEffect(() => {
                 <button
                   type="button"
                   onClick={handleNext}
-                  className="flex h-12 w-12 items-center justify-center rounded-full bg-white/90 text-[#0A304E] shadow-[0_12px_36px_-22px_rgba(15,23,42,0.65)] transition hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0A304E]"
+                  className="flex h-12 w-12 items-center justify-center rounded-full bg-white/90 text-[#0A304E] shadow-[0_10px_31px_-22px_rgba(15,23,42,0.65)] transition hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0A304E]"
                 >
                   <ChevronDown className="h-5 w-5" aria-hidden="true" />
                   <span className="sr-only">Projet suivant</span>
@@ -797,11 +804,11 @@ useLayoutEffect(() => {
                       </span>
                     ))}
                   </div>
-                  {detailProject.testimonial && (
+                  {testimonialsEnabled && detailProject.testimonial && (
                     <figure
                       data-animate-item
                       data-animate-order="4"
-                      className="rounded-3xl border border-black/5 bg-white/80 p-5 text-[#0A304E] shadow-[0_18px_44px_-32px_rgba(15,23,42,0.35)] backdrop-blur-[2px]"
+                      className="rounded-3xl border border-black/5 bg-white/80 p-5 text-[#0A304E] shadow-[0_15px_37px_-32px_rgba(15,23,42,0.35)] backdrop-blur-[2px]"
                     >
                       <blockquote className="text-sm italic leading-relaxed text-[#0A304E]/90">
                         « {detailProject.testimonial.quote} »
