@@ -64,8 +64,8 @@ const ARROW_STACK_GAP_PX = 4;
 const ARROW_STACK_HEIGHT_PX = ARROW_BUTTON_SIZE_PX * 2 + ARROW_STACK_GAP_PX;
 const INACTIVE_CARD_SCALE = 1;
 const INACTIVE_CARD_Y_OFFSET_PX = 0;
-const ACTIVE_CARD_SCALE_X = 1.08;
-const ACTIVE_CARD_SCALE_Y = 1.25;
+const ACTIVE_CARD_SCALE_X = 1.1662;
+const ACTIVE_CARD_SCALE_Y = 1.3519;
 const OVERLAY_HORIZONTAL_SHIFT_PERCENT = 0;
 const INACTIVE_CARD_X_OFFSET_PERCENT = ((ACTIVE_CARD_SCALE_X - 1) / 2) * 100;
 const DETAIL_EXIT_DURATION_MS = 360;
@@ -546,8 +546,8 @@ useLayoutEffect(() => {
 }, [displayedProject?.id]);
 
   return (
-    <section className="bg-[#F2F5FC] px-4 pt-12 pb-12 sm:pt-16 sm:pb-16 mt-8 sm:mt-12 lg:mt-14">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-8">
+    <section className="bg-[#F2F5FC] px-4 pt-2 pb-12 sm:pt-6 sm:pb-16">
+      <div className="mx-auto flex w-full max-w-[1145px] flex-col gap-8">
         <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
           <Reveal className="relative z-10 mt-[clamp(2.5rem,7vw,6rem)] max-w-2xl space-y-6">
             <h2 className="font-black leading-[1.05] text-[clamp(2.4rem,5.25vw,3.45rem)] text-[#111111]">
@@ -582,7 +582,7 @@ useLayoutEffect(() => {
               >
                 <div
                   className="flex h-full w-full flex-col transition-transform duration-500 ease-out"
-                  style={{ transform: `translateY(calc(-${safeIndex * 100}% + 10%))` }}
+                  style={{ transform: `translateY(calc(-${safeIndex * 100}% + 15%))` }}
                 >
                   {projects.map((project, index) => {
                     const isActive = index === safeIndex;
