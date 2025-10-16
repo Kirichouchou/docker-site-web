@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { logger } from "../../../../lib/logger";
 
 export const runtime = "nodejs";
 
@@ -25,7 +26,7 @@ export async function GET(req: NextRequest) {
   });
 
   const tokens = await tokenRes.json();
-  console.log("Tokens Google:", tokens);
+  logger.info("Tokens Google reçus");
 
   // TODO : stocker tokens.refresh_token en BDD ou Secret Manager
   return NextResponse.json({ ok: true, tokens });

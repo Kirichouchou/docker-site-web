@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { logger } from "../lib/logger";
 
 function formatEUR(cents: number) {
   return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(cents / 100);
@@ -53,7 +54,7 @@ export default function ProductCard(props: {
       throw new Error("Réponse sans URL de paiement.");
     }
   } catch (err: any) {
-    console.error("Checkout error:", err);
+    logger.error("Erreur lors du checkout", err);
     alert(err.message || "Échec de la création de la session Stripe.");
   } finally {
     setLoading(false);

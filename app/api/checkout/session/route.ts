@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "../../../../lib/stripe";
-import { getAuthSession } from "../../../../lib/auth";
+import { getAuthSession } from "../../../../lib/auth-session";
 import { getPriceIdForKey, ensureProductsSeeded } from "../../../../lib/access";
+import { logger } from "../../../../lib/logger";
 
 export async function POST(req: NextRequest) {
   try {
@@ -41,7 +42,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ url: checkout.url });
   } catch (err: any) {
-    console.error("Checkout error:", err);
+    logger.error("Erreur lors de la création de la session checkout", err);
     return NextResponse.json(
       { error: err?.message || "Erreur" },
       { status: 500 }

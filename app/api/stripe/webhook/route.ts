@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "../../../../lib/stripe";
 import { grantAccessForSession } from "../../../../lib/access";
+import { logger } from "../../../../lib/logger";
 
 export const runtime = "nodejs";
 
@@ -43,7 +44,7 @@ export async function POST(req: NextRequest) {
       });
     } catch (err) {
       // Log and continue to acknowledge to Stripe
-      console.error("Webhook error:", err);
+      logger.error("Erreur webhook Stripe", err);
     }
   }
 
