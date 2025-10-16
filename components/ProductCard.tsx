@@ -1,9 +1,6 @@
 "use client";
 import Image from "next/image";
-import { useState } from "react";
-import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { logger } from "../lib/logger";
 
 function formatEUR(cents: number) {
   return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(cents / 100);
@@ -21,72 +18,65 @@ export default function ProductCard(props: {
   };
 }) {
   const { product } = props;
-  const [loading, setLoading] = useState(false);
-
-  const handleCheckout = async () => {
-  setLoading(true);
-  try {
-    const res = await fetch("/api/checkout/session", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ productKey: product.key }),
-      cache: "no-store",
-    });
-
-    // Lis le texte brut d'abord pour éviter "Unexpected end of JSON input"
-    const text = await res.text();
-
-    if (!res.ok) {
-      // Remonte l’erreur du serveur (ex: PRICE_ID non configuré)
-      throw new Error(`HTTP ${res.status} – ${text.slice(0, 300)}`);
-    }
-
-    let data: any = {};
-    try {
-      data = JSON.parse(text);
-    } catch {
-      throw new Error(`Réponse non-JSON: ${text.slice(0, 300)}`);
-    }
-
-    if (data?.url) {
-      window.location.href = data.url; // redirection vers Stripe Checkout
-    } else {
-      throw new Error("Réponse sans URL de paiement.");
-    }
-  } catch (err: any) {
-    logger.error("Erreur lors du checkout", err);
-    alert(err.message || "Échec de la création de la session Stripe.");
-  } finally {
-    setLoading(false);
-  }
-};
 
   return (
-    <Card className="relative overflow-hidden">
+    <Card className="relative overflow-hidden border-0 bg-white/80 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 group">
       {product.tag && (
-        <div className="absolute top-3 right-3 rounded-2xl bg-brand text-white px-4 py-1.5 text-sm md:text-base font-medium shadow-soft">{product.tag}</div>
+        <div className="absolute top-4 right-4 z-10">
+          <span className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+            {product.tag}
+          </span>
+        </div>
       )}
-      <CardHeader>
-        <CardTitle>{product.name}</CardTitle>
+      
+      <CardHeader className="p-0">
+        <div className="relative overflow-hidden">
+          <Image
+            src={product.image.src}
+            alt={product.image.alt}
+            width={product.image.width}
+            height={product.image.height}
+            className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+        </div>
       </CardHeader>
-      <CardContent>
-        <div className="rounded-2xl overflow-hidden border border-border mb-4">
-          <Image src={product.image.src} alt={product.image.alt} width={product.image.width} height={product.image.height} className="w-full h-auto object-cover" />
+      
+      <CardContent className="p-6">
+        <CardTitle className="text-xl font-bold mb-4 text-gray-900">
+          {product.name}
+        </CardTitle>
+        
+        <div className="mb-6">
+          <div className="flex items-baseline gap-2 mb-2">
+            <span className="text-3xl font-bold text-gray-900">
+              {formatEUR(product.priceCents)}
+            </span>
+            {product.originalPriceCents && (
+              <span className="text-lg text-gray-500 line-through">
+                {formatEUR(product.originalPriceCents)}
+              </span>
+            )}
+          </div>
         </div>
-        <div className="mb-3 flex items-baseline gap-2">
-          <div className="text-2xl font-semibold">{formatEUR(product.priceCents)}</div>
-          {typeof product.originalPriceCents === "number" && product.originalPriceCents > product.priceCents && (
-            <div className="text-base text-muted-foreground line-through">{formatEUR(product.originalPriceCents)}</div>
-          )}
-        </div>
-        <ul className="mb-4 space-y-2 list-disc pl-5 text-muted-foreground">
-          {product.bullets.map((b, i) => (
-            <li key={i}>{b}</li>
+        
+        <ul className="space-y-3 mb-6">
+          {product.bullets.map((bullet, index) => (
+            <li key={index} className="flex items-start gap-3">
+              <div className="w-5 h-5 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <span className="text-gray-700">{bullet}</span>
+            </li>
           ))}
         </ul>
-        <Button onClick={handleCheckout} disabled={loading} className="w-full h-12">
-          {loading ? "Redirection…" : "Acheter maintenant"}
-        </Button>
+        
+        <div className="text-center">
+          <p className="text-gray-600 text-sm">
+            Contactez-nous pour plus d'informations
+          </p>
+        </div>
       </CardContent>
     </Card>
   );
