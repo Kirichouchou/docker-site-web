@@ -1,10 +1,11 @@
-﻿"use client";
+"use client";
 
 import React from "react";
 import { ArrowUpRight } from "lucide-react";
 import Reveal from "./Reveal";
 import { useContactOverlay } from "./ContactOverlayProvider";
 import { useLanguage } from "../contexts/LanguageContext";
+import Greeting from "./Greeting";
 
 export default function Hero() {
   const { dictionary } = useLanguage();
@@ -24,6 +25,9 @@ export default function Hero() {
   return (
     <section className="min-h-screen flex flex-col items-center justify-start px-4 pt-[72px] pb-24 bg-[#F2F5FC]">
       <div className="w-full max-w-[960px] text-center mt-8 md:mt-12 space-y-8">
+        <Reveal as="div" className="mb-4">
+          <Greeting />
+        </Reveal>
         <Reveal
           as="h1"
           className="text-gray-900 font-black leading-[1.05] text-[clamp(3.5rem,8vw,5rem)]"

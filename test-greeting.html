@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Greeting</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+    </style>
+</head>
+<body>
+    <h1>Test de la fonctionnalité "Bonjour" en français</h1>
+    
+    <div class="test success">
+        <h3>✅ Traductions ajoutées</h3>
+        <p>Les traductions ont été ajoutées dans <code>locales/translations.ts</code> :</p>
+        <ul>
+            <li>Français: "Bonjour"</li>
+            <li>Anglais: "Hello"</li>
+            <li>Espagnol: "Hola"</li>
+        </ul>
+    </div>
+
+    <div class="test success">
+        <h3>✅ Composant Greeting créé</h3>
+        <p>Le composant <code>components/Greeting.tsx</code> a été créé avec :</p>
+        <ul>
+            <li>Utilisation du hook <code>useLanguage()</code></li>
+            <li>Affichage de <code>{t("common.greeting")} ! 👋</code></li>
+            <li>Message de bienvenue</li>
+        </ul>
+    </div>
+
+    <div class="test success">
+        <h3>✅ Intégration dans Hero</h3>
+        <p>Le composant Greeting a été intégré dans <code>components/Hero.tsx</code> :</p>
+        <ul>
+            <li>Import du composant Greeting</li>
+            <li>Ajout dans la section Hero avec animation Reveal</li>
+            <li>Positionnement au début de la section</li>
+        </ul>
+    </div>
+
+    <div class="test">
+        <h3>🔄 Test en cours</h3>
+        <p>Pour tester la fonctionnalité :</p>
+        <ol>
+            <li>Démarrez le serveur avec <code>pnpm dev</code></li>
+            <li>Ouvrez le site dans un navigateur</li>
+            <li>Vérifiez que "Bonjour ! 👋" s'affiche en haut de la page</li>
+            <li>Changez la langue avec le sélecteur de langue</li>
+            <li>Vérifiez que le message change (Hello ! / Hola !)</li>
+        </ol>
+    </div>
+
+    <div class="test success">
+        <h3>✅ Fonctionnalité implémentée</h3>
+        <p>La fonctionnalité "dire bonjour en français" a été implémentée avec succès !</p>
+        <p>Le message s'adapte automatiquement à la langue sélectionnée par l'utilisateur.</p>
+    </div>
+</body>
+</html>

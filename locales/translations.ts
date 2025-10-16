@@ -13,6 +13,7 @@ export const TRANSLATIONS: Record<Language, any> = {
   fr: {
     common: {
       brand: "Fynora",
+      greeting: "Bonjour",
       languageSelector: {
         ariaLabel: "Changer de langue",
         tooltip: "Langue",
@@ -189,6 +190,7 @@ export const TRANSLATIONS: Record<Language, any> = {
   en: {
     common: {
       brand: "Fynora",
+      greeting: "Hello",
       languageSelector: {
         ariaLabel: "Change language",
         tooltip: "Language",
@@ -363,6 +365,7 @@ export const TRANSLATIONS: Record<Language, any> = {
   es: {
     common: {
       brand: "Fynora",
+      greeting: "Hola",
       languageSelector: {
         ariaLabel: "Cambiar idioma",
         tooltip: "Idioma",
