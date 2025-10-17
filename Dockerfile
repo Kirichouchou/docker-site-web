@@ -23,6 +23,7 @@ RUN pnpm prisma generate
 
 # 6) Build Next en mode standalone (image finale ultra-légère)
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV NEXT_OUTPUT=standalone
 RUN pnpm build
 
 # --- runner : contient juste ce qu'il faut pour exécuter l'app ---
